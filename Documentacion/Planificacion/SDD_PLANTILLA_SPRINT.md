@@ -13,9 +13,9 @@ Usa esta plantilla para cada sprint y completa TODO en orden. No pasar a impleme
 - `repo`: `https://github.com/AlejoPalavecino/FoxMindSecundario-Prototype`
 - `scope_mvp`: `Docente | Alumno | Compartido`
 - `fuentes_canonicas`:
-  - `Documentacion/Detalle Rol Docente.md`
-  - `Documentacion/Detalle Rol Alumno.md`
-  - `Documentacion/Desing system.md`
+  - `Documentacion/Core/Detalle Rol Docente.md`
+  - `Documentacion/Core/Detalle Rol Alumno.md`
+  - `Documentacion/Core/Desing system.md`
 
 ---
 

@@ -4,9 +4,9 @@ FoxMind Secundario es un sistema de aprendizaje adaptativo con foco en dos perfi
 
 > [!IMPORTANT]
 > Para construir el producto sin ambiguedades:
-> - Funcionalidad canonica: `Documentacion/Detalle Rol Docente.md` y `Documentacion/Detalle Rol Alumno.md`
-> - UI/UX canonica: `Documentacion/Desing system.md`
-> - Restricciones tecnicas: `Documentacion/00` a `Documentacion/09`
+> - Funcionalidad canonica: `Documentacion/Core/Detalle Rol Docente.md` y `Documentacion/Core/Detalle Rol Alumno.md`
+> - UI/UX canonica: `Documentacion/Core/Desing system.md`
+> - Restricciones tecnicas: `Documentacion/Core` y `Documentacion/Operacion`
 
 ## Estado del proyecto
 
@@ -91,7 +91,7 @@ Funcionalidades clave:
 
 ## Lineamientos de estilo y experiencia
 
-Los lineamientos visuales deben seguir `Documentacion/Desing system.md`:
+Los lineamientos visuales deben seguir `Documentacion/Core/Desing system.md`:
 
 - Paleta de baja fatiga visual basada en verdes/esmeraldas
 - Identidad por rol: Docente (teal), Alumno (lavanda), CTA (naranja)
@@ -99,7 +99,7 @@ Los lineamientos visuales deben seguir `Documentacion/Desing system.md`:
 - Componentes con bordes suaves, contraste accesible y foco visible
 - Accesibilidad como requisito nativo (no como parche)
 
-`Documentacion/05_ARQUITECTURA DE LA EXPERIENCIA.md` y `Documentacion/05.1_GUÍA DE ESTILO VISUAL (NIVEL SECUNDARIO) – ABSTRACCIÓN DE PRIMARIA.md` complementan la implementacion, pero ante conflicto prevalece `Documentacion/Desing system.md`.
+`Documentacion/Core/05_ARQUITECTURA DE LA EXPERIENCIA.md` y `Documentacion/Core/05.1_GUÍA DE ESTILO VISUAL (NIVEL SECUNDARIO) – ABSTRACCIÓN DE PRIMARIA.md` complementan la implementacion, pero ante conflicto prevalece `Documentacion/Core/Desing system.md`.
 
 ## Arquitectura y calidad (resumen)
 
@@ -139,20 +139,23 @@ Se considera MVP listo cuando:
 
 ## Mapa de documentacion
 
-- Vision y actores: `Documentacion/00_PROPUESTA DE VALOR Y ACTORES.md`
-- Funcionalidad e historias: `Documentacion/01_REQUISITOS FUNCIONALES E HISTORIAS DE USUARIO.md`
-- No funcionales: `Documentacion/02_REQUISITOS NO FUNCIONALES.md`
-- Arquitectura tecnica: `Documentacion/03_ARQUITECTURA DEL SISTEMA Y PATRONES DE DISEÑO.md`
-- Dominio y datos: `Documentacion/04_MODELADO DE DATOS Y DOMINIO.md`
-- UX/UI: `Documentacion/05_ARQUITECTURA DE LA EXPERIENCIA.md`
-- Guia visual secundaria: `Documentacion/05.1_GUÍA DE ESTILO VISUAL (NIVEL SECUNDARIO) – ABSTRACCIÓN DE PRIMARIA.md`
-- Testing y calidad: `Documentacion/06_ESTRATEGIA DE TESTING Y CALIDAD DE CÓDIGO.md`
-- Seguridad y CI/CD: `Documentacion/07_SEGURIDAD (DEVSECOPS) Y CI-CD.md`
-- Reglas operativas: `Documentacion/08_REGLAS DEL AGENTE (AGENT.MD) Y SCAFFOLDING.md`
-- Colaboracion Git: `Documentacion/09_GUIA_COLABORACION_GIT_REMOTO.md`
-- Detalle funcional Docente: `Documentacion/Detalle Rol Docente.md`
-- Detalle funcional Alumno: `Documentacion/Detalle Rol Alumno.md`
-- Design System canonico: `Documentacion/Desing system.md`
+- Vision y actores: `Documentacion/Core/00_PROPUESTA DE VALOR Y ACTORES.md`
+- Funcionalidad e historias: `Documentacion/Core/01_REQUISITOS FUNCIONALES E HISTORIAS DE USUARIO.md`
+- No funcionales: `Documentacion/Core/02_REQUISITOS NO FUNCIONALES.md`
+- Arquitectura tecnica: `Documentacion/Core/03_ARQUITECTURA DEL SISTEMA Y PATRONES DE DISEÑO.md`
+- Dominio y datos: `Documentacion/Core/04_MODELADO DE DATOS Y DOMINIO.md`
+- UX/UI: `Documentacion/Core/05_ARQUITECTURA DE LA EXPERIENCIA.md`
+- Guia visual secundaria: `Documentacion/Core/05.1_GUÍA DE ESTILO VISUAL (NIVEL SECUNDARIO) – ABSTRACCIÓN DE PRIMARIA.md`
+- Detalle funcional Docente: `Documentacion/Core/Detalle Rol Docente.md`
+- Detalle funcional Alumno: `Documentacion/Core/Detalle Rol Alumno.md`
+- Design System canonico: `Documentacion/Core/Desing system.md`
+- Testing y calidad: `Documentacion/Operacion/06_ESTRATEGIA DE TESTING Y CALIDAD DE CÓDIGO.md`
+- Seguridad y CI/CD: `Documentacion/Operacion/07_SEGURIDAD (DEVSECOPS) Y CI-CD.md`
+- Reglas operativas: `Documentacion/Operacion/08_REGLAS DEL AGENTE (AGENT.MD) Y SCAFFOLDING.md`
+- Colaboracion Git: `Documentacion/Operacion/09_GUIA_COLABORACION_GIT_REMOTO.md`
+- Setup OAuth: `Documentacion/Operacion/OAuth-Setup.md`
+- Plan de implementacion por sprints: `Documentacion/Planificacion/PLAN_IMPLEMENTACION_SPRINTS.md`
+- Plantilla SDD por sprint: `Documentacion/Planificacion/SDD_PLANTILLA_SPRINT.md`
 
 ---
 

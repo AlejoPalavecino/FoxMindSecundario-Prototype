@@ -3,8 +3,8 @@
 ## Aclaraciones transversales del MVP
 
 - **Base de datos del MVP**: La implementación del MVP se realizará sobre **Supabase** (PostgreSQL administrado), no sobre una instalación convencional/autogestionada de PostgreSQL.
-- **Alcance funcional validado en prototipo**: El prototipo actual cubre en profundidad los dos perfiles principales, **Rol Docente** y **Rol Alumno**. El detalle funcional oficial está en [Detalle Rol Docente](Detalle%20Rol%20Docente.md) y [Detalle Rol Alumno](Detalle%20Rol%20Alumno.md).
-- **Sistema de diseño de referencia**: Las decisiones de UI deben alinearse con [Desing system](Desing%20system.md). Si hay diferencias con lineamientos previos, prevalece este documento de diseño para el MVP.
+- **Alcance funcional validado en prototipo**: El prototipo actual cubre en profundidad los dos perfiles principales, **Rol Docente** y **Rol Alumno**. El detalle funcional oficial está en [Detalle Rol Docente](../Core/Detalle%20Rol%20Docente.md) y [Detalle Rol Alumno](../Core/Detalle%20Rol%20Alumno.md).
+- **Sistema de diseño de referencia**: Las decisiones de UI deben alinearse con [Desing system](../Core/Desing%20system.md). Si hay diferencias con lineamientos previos, prevalece este documento de diseño para el MVP.
 
 ## Alineación operativa con el prototipo
 

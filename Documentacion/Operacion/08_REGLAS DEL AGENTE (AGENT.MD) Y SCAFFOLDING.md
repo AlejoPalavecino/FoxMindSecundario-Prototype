@@ -3,18 +3,18 @@
 ## Aclaraciones transversales del MVP
 
 - **Base de datos del MVP**: La implementación del MVP se realizará sobre **Supabase** (PostgreSQL administrado), no sobre una instalación convencional/autogestionada de PostgreSQL.
-- **Alcance funcional validado en prototipo**: El prototipo actual cubre en profundidad los dos perfiles principales, **Rol Docente** y **Rol Alumno**. El detalle funcional oficial está en [Detalle Rol Docente](Detalle%20Rol%20Docente.md) y [Detalle Rol Alumno](Detalle%20Rol%20Alumno.md).
-- **Sistema de diseño de referencia**: Las decisiones de UI deben alinearse con [Desing system](Desing%20system.md). Si hay diferencias con lineamientos previos, prevalece este documento de diseño para el MVP.
+- **Alcance funcional validado en prototipo**: El prototipo actual cubre en profundidad los dos perfiles principales, **Rol Docente** y **Rol Alumno**. El detalle funcional oficial está en [Detalle Rol Docente](../Core/Detalle%20Rol%20Docente.md) y [Detalle Rol Alumno](../Core/Detalle%20Rol%20Alumno.md).
+- **Sistema de diseño de referencia**: Las decisiones de UI deben alinearse con [Desing system](../Core/Desing%20system.md). Si hay diferencias con lineamientos previos, prevalece este documento de diseño para el MVP.
 
 ## Alineación operativa con el prototipo
 
-- Fuente funcional principal para construir features: [Detalle Rol Docente](Detalle%20Rol%20Docente.md) y [Detalle Rol Alumno](Detalle%20Rol%20Alumno.md).
-- Fuente visual principal para UI/UX: [Desing system](Desing%20system.md).
+- Fuente funcional principal para construir features: [Detalle Rol Docente](../Core/Detalle%20Rol%20Docente.md) y [Detalle Rol Alumno](../Core/Detalle%20Rol%20Alumno.md).
+- Fuente visual principal para UI/UX: [Desing system](../Core/Desing%20system.md).
 - Los documentos tecnicos (00-09) definen restricciones de arquitectura, seguridad, testing y delivery para implementar esos flujos funcionales.
 
 # 1\. STACK TECNOLÓGICO Y COMANDOS DE INICIALIZACIÓN
 
-- **Frontend**: Next.js (React), TailwindCSS y componentes/tokens definidos por `Desing system.md` (MD3 puede usarse como referencia de patrones).
+- **Frontend**: Next.js (React), TailwindCSS y componentes/tokens definidos por `../Core/Desing system.md` (MD3 puede usarse como referencia de patrones).
 - **Backend**: Node.js (NestJS), TypeScript estricto.
 - **Base de Datos & ORM**: Supabase (PostgreSQL administrado) \+ Prisma ORM.
 - **Comandos Core** (Scaffolding):

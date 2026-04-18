@@ -6,8 +6,8 @@ Esta guia define como trabajar 2 personas full stack sobre un remote compartido 
 
 ## Alineación operativa con el prototipo
 
-- Para implementar alcance MVP, el equipo debe tomar como referencia funcional obligatoria: `Detalle Rol Docente.md` y `Detalle Rol Alumno.md`.
-- Para decisiones de UI/UX y componentes, la referencia obligatoria es `Desing system.md`.
+- Para implementar alcance MVP, el equipo debe tomar como referencia funcional obligatoria: `../Core/Detalle Rol Docente.md` y `../Core/Detalle Rol Alumno.md`.
+- Para decisiones de UI/UX y componentes, la referencia obligatoria es `../Core/Desing system.md`.
 - Los documentos técnicos `00` a `09` gobiernan el "como" (arquitectura, testing, seguridad, colaboración) de esa implementación.
 
 Resultado esperado:
