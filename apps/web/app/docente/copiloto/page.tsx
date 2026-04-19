@@ -1,7 +1,7 @@
 import React from "react";
-import { EmptyState } from "../../../components/shared/empty-state";
 import { PageHeader } from "../../../components/shared/page-header";
 import { StatusBadge } from "../../../components/shared/status-badge";
+import { ShellUiStates } from "../../../components/shared/shell-ui-states";
 
 export default function DocenteCopilotoPage() {
   return (
@@ -11,10 +11,12 @@ export default function DocenteCopilotoPage() {
         subtitle="Prepará actividades y sugerencias pedagógicas con asistencia inteligente."
         actions={<StatusBadge status="warning" />}
       />
-      <EmptyState
-        title="Sin contenido disponible"
-        description="La base del Copiloto IA está habilitada para sumar prompts y recomendaciones en el próximo batch."
-        action={{ href: "/docente/copiloto", label: "Abrir copiloto" }}
+      <ShellUiStates
+        basePath="/docente/copiloto"
+        loadingDescription="Cargando asistencias y sugerencias del copiloto."
+        errorDescription="No pudimos conectar con el Copiloto IA."
+        successDescription="Copiloto IA operativo para acompañar la planificación."
+        emptyDescription="La base del Copiloto IA está habilitada para sumar prompts y recomendaciones en el próximo batch."
       />
     </section>
   );

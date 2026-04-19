@@ -1,7 +1,7 @@
 import React from "react";
-import { EmptyState } from "../../../components/shared/empty-state";
 import { PageHeader } from "../../../components/shared/page-header";
 import { StatusBadge } from "../../../components/shared/status-badge";
+import { ShellUiStates } from "../../../components/shared/shell-ui-states";
 
 export default function DocenteProgresoPage() {
   return (
@@ -11,10 +11,12 @@ export default function DocenteProgresoPage() {
         subtitle="Seguí avances de estudiantes y cohortes con foco en métricas clave."
         actions={<StatusBadge status="ok" />}
       />
-      <EmptyState
-        title="Sin contenido disponible"
-        description="El shell de Progreso está listo para integrar indicadores y evolución por aula."
-        action={{ href: "/docente/progreso", label: "Actualizar progreso" }}
+      <ShellUiStates
+        basePath="/docente/progreso"
+        loadingDescription="Cargando métricas de avance por aula."
+        errorDescription="No pudimos recuperar los indicadores de progreso."
+        successDescription="Indicadores de progreso listos para análisis docente."
+        emptyDescription="El shell de Progreso está listo para integrar indicadores y evolución por aula."
       />
     </section>
   );

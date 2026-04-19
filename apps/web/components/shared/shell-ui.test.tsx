@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { EmptyState } from "./empty-state";
 import { PageHeader } from "./page-header";
+import { ShellUiStates } from "./shell-ui-states";
 import { StatusBadge, resolveStatusBadge } from "./status-badge";
 
 describe("shared shell ui", () => {
@@ -45,5 +46,22 @@ describe("shared shell ui", () => {
 
     expect(html).toContain("Atención");
     expect(html).toContain("Estado: Atención");
+  });
+
+  it("renders reusable ui states contract", () => {
+    const html = renderToStaticMarkup(
+      <ShellUiStates
+        basePath="/docente"
+        loadingDescription="Cargando datos"
+        errorDescription="No pudimos recuperar la información"
+        successDescription="Todo listo"
+        emptyDescription="No hay datos"
+      />
+    );
+
+    expect(html).toContain("Estado: Cargando");
+    expect(html).toContain("Estado: Error");
+    expect(html).toContain("Estado: Operativo");
+    expect(html).toContain("Sin contenido disponible");
   });
 });

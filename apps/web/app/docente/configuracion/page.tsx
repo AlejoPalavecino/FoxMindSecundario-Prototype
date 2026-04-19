@@ -1,7 +1,7 @@
 import React from "react";
-import { EmptyState } from "../../../components/shared/empty-state";
 import { PageHeader } from "../../../components/shared/page-header";
 import { StatusBadge } from "../../../components/shared/status-badge";
+import { ShellUiStates } from "../../../components/shared/shell-ui-states";
 
 export default function DocenteConfiguracionPage() {
   return (
@@ -11,10 +11,12 @@ export default function DocenteConfiguracionPage() {
         subtitle="Ajustá preferencias de cuenta, notificaciones y parámetros de trabajo docente."
         actions={<StatusBadge status="ok" />}
       />
-      <EmptyState
-        title="Sin contenido disponible"
-        description="La sección de Configuración quedó preparada para incorporar opciones personalizadas por docente."
-        action={{ href: "/docente/configuracion", label: "Abrir configuración" }}
+      <ShellUiStates
+        basePath="/docente/configuracion"
+        loadingDescription="Cargando preferencias y parámetros docentes."
+        errorDescription="No pudimos cargar la configuración docente."
+        successDescription="Configuración disponible para personalizar tu entorno docente."
+        emptyDescription="La sección de Configuración quedó preparada para incorporar opciones personalizadas por docente."
       />
     </section>
   );

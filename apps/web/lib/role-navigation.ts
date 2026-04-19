@@ -40,10 +40,10 @@ const DOCENTE_ITEMS: RoleNavigationItem[] = [
 
 const ALUMNO_ITEMS: RoleNavigationItem[] = [
   { key: "dashboard", label: "Dashboard", href: "/alumno", enabled: true },
-  { key: "aulas", label: "Aulas", href: "/alumno/aulas", enabled: false },
-  { key: "estudia", label: "EstudIA", href: "/alumno/estudia", enabled: false },
-  { key: "mi-progreso", label: "Mi Progreso", href: "/alumno/progreso", enabled: false },
-  { key: "configuracion", label: "Configuración", href: "/alumno/configuracion", enabled: false }
+  { key: "aulas", label: "Aulas", href: "/alumno/aulas", enabled: true },
+  { key: "estudia", label: "EstudIA", href: "/alumno/estudia", enabled: true },
+  { key: "mi-progreso", label: "Mi Progreso", href: "/alumno/progreso", enabled: true },
+  { key: "configuracion", label: "Configuración", href: "/alumno/configuracion", enabled: true }
 ];
 
 const ROLE_META: Record<UserRole, RoleShellMeta> = {
