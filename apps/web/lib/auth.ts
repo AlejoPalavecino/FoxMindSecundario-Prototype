@@ -1,4 +1,5 @@
 import type { AuthSession, LoginRequest, UserRole } from "@foxmind/shared";
+import { getDefaultPathByRole } from "./role-navigation";
 
 export const AUTH_COOKIE_ACCESS = "foxmind_access_token";
 export const AUTH_COOKIE_REFRESH = "foxmind_refresh_token";
@@ -31,7 +32,7 @@ export function clearSessionCookies() {
 }
 
 export function roleHomePath(role: UserRole) {
-  return role === "DOCENTE" ? "/docente" : "/alumno";
+  return getDefaultPathByRole(role);
 }
 
 function writeCookie(name: string, value: string, days = 7) {

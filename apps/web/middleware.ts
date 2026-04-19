@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { AUTH_COOKIE_ACCESS, AUTH_COOKIE_ROLE } from "./lib/auth";
+import { getDefaultPathByRole } from "./lib/role-navigation";
 
 const PUBLIC_PATHS = new Set(["/login"]);
 
@@ -32,10 +33,10 @@ export const config = {
 
 function redirectByRole(request: NextRequest, role?: string) {
   if (role === "DOCENTE") {
-    return NextResponse.redirect(new URL("/docente", request.url));
+    return NextResponse.redirect(new URL(getDefaultPathByRole("DOCENTE"), request.url));
   }
   if (role === "ALUMNO") {
-    return NextResponse.redirect(new URL("/alumno", request.url));
+    return NextResponse.redirect(new URL(getDefaultPathByRole("ALUMNO"), request.url));
   }
   return NextResponse.redirect(new URL("/login", request.url));
 }
