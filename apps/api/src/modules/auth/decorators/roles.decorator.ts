@@ -1,5 +1,5 @@
 import { SetMetadata } from "@nestjs/common";
-import type { Role } from "@prisma/client";
+import type { UserRole } from "@foxmind/shared";
 import { ROLES_KEY } from "../auth.constants";
 
-export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
+export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);

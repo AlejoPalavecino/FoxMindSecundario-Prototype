@@ -1,8 +1,8 @@
-import type { Role } from "@prisma/client";
+import type { UserRole } from "@foxmind/shared";
 
 export interface JwtPayload {
   sub: string;
   email: string;
-  role: Role;
+  role: UserRole;
   tenantId: string;
 }

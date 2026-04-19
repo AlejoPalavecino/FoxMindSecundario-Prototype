@@ -5,7 +5,7 @@ import {
   Injectable
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import type { Role } from "@prisma/client";
+import type { UserRole } from "@foxmind/shared";
 import { ROLES_KEY } from "../auth.constants";
 import { AuthLogger } from "../auth.logger";
 import type { JwtPayload } from "../interfaces/jwt-payload.interface";
@@ -20,7 +20,7 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext) {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass()
     ]);
