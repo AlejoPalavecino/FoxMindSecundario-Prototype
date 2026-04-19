@@ -1,5 +1,17 @@
 :root {
   color-scheme: light;
+  --color-fox-bg: #e4efea;
+  --color-fox-surface: #f0f7f4;
+  --color-fox-border: #cde0d8;
+  --color-fox-text-main: #1a332a;
+  --color-fox-text-muted: #4a665d;
+  --color-fox-orange: #f68d2c;
+  --color-fox-primary: #489980;
+  --color-fox-purple: #827397;
+  --color-fox-green: #52a874;
+  --color-fox-red: #d96c63;
+  --color-fox-yellow: #e5b842;
+  --color-fox-gold: #e5a030;
 }
 
 * {
@@ -9,9 +21,9 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Roboto, sans-serif;
-  background: #e4efea;
-  color: #1a332a;
+  font-family: var(--font-body), Roboto, sans-serif;
+  background: var(--color-fox-bg);
+  color: var(--color-fox-text-main);
 }
 
 .auth-page {
@@ -26,18 +38,18 @@ body {
   max-width: 420px;
   padding: 24px;
   border-radius: 16px;
-  border: 1px solid #cde0d8;
-  background: #f0f7f4;
+  border: 1px solid var(--color-fox-border);
+  background: var(--color-fox-surface);
 }
 
 .auth-card h1 {
   margin: 0 0 8px;
-  font-family: Montserrat, Roboto, sans-serif;
+  font-family: var(--font-heading), Montserrat, sans-serif;
 }
 
 .auth-card p {
   margin: 0 0 16px;
-  color: #4a665d;
+  color: var(--color-fox-text-muted);
 }
 
 .login-form {
@@ -47,15 +59,15 @@ body {
 }
 
 .login-form input {
-  border: 1px solid #cde0d8;
+  border: 1px solid var(--color-fox-border);
   border-radius: 12px;
   padding: 10px 12px;
-  background: #e4efea;
+  background: var(--color-fox-bg);
 }
 
 .login-form input:focus {
-  outline: 2px solid rgba(72, 153, 128, 0.3);
-  border-color: #489980;
+  outline: 2px solid color-mix(in srgb, var(--color-fox-primary) 30%, transparent);
+  border-color: var(--color-fox-primary);
 }
 
 .login-form button {
@@ -65,7 +77,7 @@ body {
   font-weight: 700;
   cursor: pointer;
   color: #fff;
-  background: #489980;
+  background: var(--color-fox-primary);
 }
 
 .login-form button:disabled {
@@ -76,7 +88,7 @@ body {
 .error-text {
   margin: 0;
   font-size: 14px;
-  color: #d96c63;
+  color: var(--color-fox-red);
 }
 
 .role-shell {
@@ -86,13 +98,13 @@ body {
 
 .role-shell h1 {
   margin-top: 0;
-  font-family: Montserrat, Roboto, sans-serif;
+  font-family: var(--font-heading), Montserrat, sans-serif;
 }
 
 .role-docente {
-  border-top: 8px solid #489980;
+  border-top: 8px solid var(--color-fox-primary);
 }
 
 .role-alumno {
-  border-top: 8px solid #827397;
+  border-top: 8px solid var(--color-fox-purple);
 }
