@@ -1,0 +1,10 @@
+{
+  "name": "@foxmind/shared",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  }
+}
