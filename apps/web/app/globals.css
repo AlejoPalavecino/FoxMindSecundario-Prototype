@@ -8,5 +8,91 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: Roboto, sans-serif;
+  background: #e4efea;
+  color: #1a332a;
+}
+
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #cde0d8;
+  background: #f0f7f4;
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  font-family: Montserrat, Roboto, sans-serif;
+}
+
+.auth-card p {
+  margin: 0 0 16px;
+  color: #4a665d;
+}
+
+.login-form {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.login-form input {
+  border: 1px solid #cde0d8;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #e4efea;
+}
+
+.login-form input:focus {
+  outline: 2px solid rgba(72, 153, 128, 0.3);
+  border-color: #489980;
+}
+
+.login-form button {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  background: #489980;
+}
+
+.login-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-text {
+  margin: 0;
+  font-size: 14px;
+  color: #d96c63;
+}
+
+.role-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.role-shell h1 {
+  margin-top: 0;
+  font-family: Montserrat, Roboto, sans-serif;
+}
+
+.role-docente {
+  border-top: 8px solid #489980;
+}
+
+.role-alumno {
+  border-top: 8px solid #827397;
 }
