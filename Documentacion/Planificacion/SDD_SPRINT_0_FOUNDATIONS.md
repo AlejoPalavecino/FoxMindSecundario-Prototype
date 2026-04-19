@@ -170,7 +170,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 ### Should
 
-- [ ] `TASK-007` Logging estructurado en auth.
+- [x] `TASK-007` Logging estructurado en auth.
 - [ ] `TASK-008` Documentar variables de entorno y setup local en README técnico.
 
 ### Could
@@ -205,7 +205,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - Objetivo del batch: calidad operativa y cierre sprint.
 - Tareas incluidas: `TASK-006`, `TASK-007`, `TASK-008`, `TASK-009`.
-- Resultado: `TASK-006` completada; `TASK-007`, `TASK-008`, `TASK-009` pendientes.
+- Resultado: `TASK-006` y `TASK-007` completadas; `TASK-008` y `TASK-009` pendientes.
 - Bloqueos: pendiente.
 
 ---

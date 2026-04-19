@@ -6,6 +6,7 @@ import type { SignOptions } from "jsonwebtoken";
 import type { AuthSession, SessionUser } from "@foxmind/shared";
 import { PrismaService } from "../prisma/prisma.service";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./auth.constants";
+import { AuthLogger } from "./auth.logger";
 import type { JwtPayload } from "./interfaces/jwt-payload.interface";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshDto } from "./dto/refresh.dto";
@@ -15,14 +16,21 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly authLogger: AuthLogger
   ) {}
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (!user || !(await compare(dto.password, user.passwordHash))) {
+      this.authLogger.warn("auth.login.failed", { email: dto.email });
       throw new UnauthorizedException("Credenciales inválidas");
     }
+    this.authLogger.info("auth.login.succeeded", {
+      userId: user.id,
+      role: user.role,
+      tenantId: user.tenantId
+    });
     return this.issueSession(this.toPayload(user));
   }
 
@@ -30,12 +38,19 @@ export class AuthService {
     const payload = await this.verifyRefreshToken(dto.refreshToken);
     const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
     if (!user?.refreshTokenHash) {
+      this.authLogger.warn("auth.refresh.failed.no_session", { userId: payload.sub });
       throw new UnauthorizedException("No existe sesión activa");
     }
     const matches = await compare(dto.refreshToken, user.refreshTokenHash);
     if (!matches) {
+      this.authLogger.warn("auth.refresh.failed.mismatch", { userId: payload.sub });
       throw new UnauthorizedException("Refresh token inválido");
     }
+    this.authLogger.info("auth.refresh.succeeded", {
+      userId: user.id,
+      role: user.role,
+      tenantId: user.tenantId
+    });
     return this.issueSession(this.toPayload(user));
   }
 
@@ -63,6 +78,7 @@ export class AuthService {
     try {
       return await this.jwtService.verifyAsync<JwtPayload>(token, { secret });
     } catch {
+      this.authLogger.warn("auth.refresh.failed.invalid_token", {});
       throw new UnauthorizedException("Refresh token inválido o expirado");
     }
   }
