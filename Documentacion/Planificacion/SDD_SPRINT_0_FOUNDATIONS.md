@@ -161,21 +161,21 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 ### Must
 
-- [ ] `TASK-001` Bootstrap `web/api/shared` con scripts y estructura inicial.
-- [ ] `TASK-002` Configurar DB (Supabase + Prisma) con migración inicial y seed.
-- [ ] `TASK-003` Implementar auth base (login, refresh, guard global, roles).
-- [ ] `TASK-004` Implementar shell por rol en frontend + route guard.
-- [ ] `TASK-005` Integrar tokens base de `Desing system.md` en UI global.
-- [ ] `TASK-006` Configurar CI mínima para PR (`lint` + `test` base).
+- [x] `TASK-001` Bootstrap `web/api/shared` con scripts y estructura inicial.
+- [x] `TASK-002` Configurar DB (Supabase + Prisma) con migración inicial y seed.
+- [x] `TASK-003` Implementar auth base (login, refresh, guard global, roles).
+- [x] `TASK-004` Implementar shell por rol en frontend + route guard.
+- [x] `TASK-005` Integrar tokens base de `Desing system.md` en UI global.
+- [x] `TASK-006` Configurar CI mínima para PR (`lint` + `test` base).
 
 ### Should
 
-- [ ] `TASK-007` Logging estructurado en auth.
-- [ ] `TASK-008` Documentar variables de entorno y setup local en README técnico.
+- [x] `TASK-007` Logging estructurado en auth.
+- [x] `TASK-008` Documentar variables de entorno y setup local en README técnico.
 
 ### Could
 
-- [ ] `TASK-009` Setup de test e2e smoke para login.
+- [x] `TASK-009` Setup de test e2e smoke para login.
 
 ### Dependencias entre tareas
 
@@ -191,21 +191,21 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - Objetivo del batch: bootstrap técnico + DB operativa.
 - Tareas incluidas: `TASK-001`, `TASK-002`.
-- Resultado: pendiente.
+- Resultado: `TASK-001` y `TASK-002` completadas.
 - Bloqueos: pendiente.
 
 ### Batch 2
 
 - Objetivo del batch: auth + shell por rol.
 - Tareas incluidas: `TASK-003`, `TASK-004`, `TASK-005`.
-- Resultado: pendiente.
+- Resultado: `TASK-003`, `TASK-004` y `TASK-005` completadas.
 - Bloqueos: pendiente.
 
 ### Batch 3
 
 - Objetivo del batch: calidad operativa y cierre sprint.
 - Tareas incluidas: `TASK-006`, `TASK-007`, `TASK-008`, `TASK-009`.
-- Resultado: pendiente.
+- Resultado: `TASK-006`, `TASK-007`, `TASK-008` y `TASK-009` completadas.
 - Bloqueos: pendiente.
 
 ---

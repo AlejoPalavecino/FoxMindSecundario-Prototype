@@ -1,0 +1,22 @@
+{
+  "name": "foxmind-secundario",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace @foxmind/web\" \"npm run dev --workspace @foxmind/api\"",
+    "dev:web": "npm run dev --workspace @foxmind/web",
+    "dev:api": "npm run dev --workspace @foxmind/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace @foxmind/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

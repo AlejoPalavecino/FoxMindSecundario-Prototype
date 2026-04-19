@@ -41,6 +41,79 @@ Checklist rapido (inicio de jornada):
 - [ ] Confirmé con el otro dev que no hay solapamiento de archivos/modulos.
 - [ ] Cree rama nueva desde `main` para una sola tarea concreta.
 
+## Setup tecnico local (Sprint 0)
+
+### 1) Requisitos
+
+- Node.js 22+
+- npm 10+
+- Base PostgreSQL local o Supabase con acceso por `DATABASE_URL`
+
+### 2) Variables de entorno
+
+Crear `apps/api/.env` (basado en `apps/api/.env.example`) con:
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/foxmind?schema=public"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5432/foxmind?schema=public"
+ACCESS_TOKEN="access-token-secret-change-me"
+REFRESH_TOKEN="refresh-token-secret-change-me"
+```
+
+Opcional en `apps/web/.env.local`:
+
+```bash
+NEXT_PUBLIC_API_URL="http://localhost:3001/api"
+```
+
+### 3) Instalacion, migracion y seed
+
+```bash
+npm install
+npm run prisma:generate --workspace @foxmind/api
+npm run prisma:migrate --workspace @foxmind/api
+npm run prisma:seed --workspace @foxmind/api
+```
+
+### 4) Arranque local
+
+```bash
+npm run dev
+```
+
+Servicios:
+
+- Web: `http://localhost:3000`
+- API: `http://localhost:3001/api`
+
+### 5) Usuarios demo seed
+
+- Docente: `docente.demo@foxmind.app` / `foxmind123`
+- Alumno: `alumno.demo@foxmind.app` / `foxmind123`
+
+### 6) Calidad minima
+
+```bash
+npm run lint
+npm run test
+```
+
+### 7) Smoke E2E de login (TASK-009)
+
+Con API levantada y seed aplicada:
+
+```bash
+npm run test:e2e
+```
+
+Variables opcionales para el smoke:
+
+```bash
+E2E_API_URL="http://localhost:3001/api"
+E2E_LOGIN_EMAIL="docente.demo@foxmind.app"
+E2E_LOGIN_PASSWORD="foxmind123"
+```
+
 ## Alcance del MVP
 
 El MVP a implementar prioriza:

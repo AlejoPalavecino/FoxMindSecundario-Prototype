@@ -1,0 +1,110 @@
+:root {
+  color-scheme: light;
+  --color-fox-bg: #e4efea;
+  --color-fox-surface: #f0f7f4;
+  --color-fox-border: #cde0d8;
+  --color-fox-text-main: #1a332a;
+  --color-fox-text-muted: #4a665d;
+  --color-fox-orange: #f68d2c;
+  --color-fox-primary: #489980;
+  --color-fox-purple: #827397;
+  --color-fox-green: #52a874;
+  --color-fox-red: #d96c63;
+  --color-fox-yellow: #e5b842;
+  --color-fox-gold: #e5a030;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body), Roboto, sans-serif;
+  background: var(--color-fox-bg);
+  color: var(--color-fox-text-main);
+}
+
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--color-fox-border);
+  background: var(--color-fox-surface);
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-heading), Montserrat, sans-serif;
+}
+
+.auth-card p {
+  margin: 0 0 16px;
+  color: var(--color-fox-text-muted);
+}
+
+.login-form {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.login-form input {
+  border: 1px solid var(--color-fox-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--color-fox-bg);
+}
+
+.login-form input:focus {
+  outline: 2px solid color-mix(in srgb, var(--color-fox-primary) 30%, transparent);
+  border-color: var(--color-fox-primary);
+}
+
+.login-form button {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  background: var(--color-fox-primary);
+}
+
+.login-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-fox-red);
+}
+
+.role-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.role-shell h1 {
+  margin-top: 0;
+  font-family: var(--font-heading), Montserrat, sans-serif;
+}
+
+.role-docente {
+  border-top: 8px solid var(--color-fox-primary);
+}
+
+.role-alumno {
+  border-top: 8px solid var(--color-fox-purple);
+}
