@@ -98,6 +98,22 @@ npm run lint
 npm run test
 ```
 
+### 7) Smoke E2E de login (TASK-009)
+
+Con API levantada y seed aplicada:
+
+```bash
+npm run test:e2e
+```
+
+Variables opcionales para el smoke:
+
+```bash
+E2E_API_URL="http://localhost:3001/api"
+E2E_LOGIN_EMAIL="docente.demo@foxmind.app"
+E2E_LOGIN_PASSWORD="foxmind123"
+```
+
 ## Alcance del MVP
 
 El MVP a implementar prioriza:

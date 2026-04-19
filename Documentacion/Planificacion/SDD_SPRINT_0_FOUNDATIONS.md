@@ -175,7 +175,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 ### Could
 
-- [ ] `TASK-009` Setup de test e2e smoke para login.
+- [x] `TASK-009` Setup de test e2e smoke para login.
 
 ### Dependencias entre tareas
 
@@ -205,7 +205,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - Objetivo del batch: calidad operativa y cierre sprint.
 - Tareas incluidas: `TASK-006`, `TASK-007`, `TASK-008`, `TASK-009`.
-- Resultado: `TASK-006`, `TASK-007` y `TASK-008` completadas; `TASK-009` pendiente.
+- Resultado: `TASK-006`, `TASK-007`, `TASK-008` y `TASK-009` completadas.
 - Bloqueos: pendiente.
 
 ---

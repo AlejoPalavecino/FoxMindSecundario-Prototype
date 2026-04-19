@@ -6,6 +6,7 @@
     "dev": "tsx watch src/main.ts",
     "lint": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
+    "test:e2e": "tsx test/smoke-login.e2e.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts"

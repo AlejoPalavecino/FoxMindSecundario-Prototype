@@ -11,7 +11,8 @@
     "dev:web": "npm run dev --workspace @foxmind/web",
     "dev:api": "npm run dev --workspace @foxmind/api",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace @foxmind/api"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
