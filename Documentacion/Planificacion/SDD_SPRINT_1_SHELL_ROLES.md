@@ -41,7 +41,7 @@ Escenarios clave:
 
 ## 5) Tasks
 ### Must
-- [ ] `TASK-001` Implementar rutas y layouts por rol.
+- [x] `TASK-001` Implementar rutas y layouts por rol.
 - [ ] `TASK-002` Crear todas las vistas shell requeridas para Docente.
 - [ ] `TASK-003` Crear todas las vistas shell requeridas para Alumno.
 - [ ] `TASK-004` Implementar estados `empty/loading/error/success` en todas las vistas.
@@ -56,7 +56,8 @@ Escenarios clave:
 - [ ] `TASK-009` Atajos de navegacion rapida en dashboards.
 
 ## 6) Apply
-- Batch 1: layouts + navegacion por rol.
+- Batch 1 (completado): layouts por rol Docente/Alumno, config tipada unica de navegacion y base de biblioteca compartida (`PageHeader`, `EmptyState`, `StatusBadge`) integrada en shells actuales.
+- Nota TASK-005: en Batch 1 se completo SOLO la base inicial de componentes compartidos; la task sigue abierta hasta cerrar biblioteca minima completa en batches siguientes.
 - Batch 2: pantallas shell docente.
 - Batch 3: pantallas shell alumno + estados UI.
 - Batch 4: polish responsive + accesibilidad base.
