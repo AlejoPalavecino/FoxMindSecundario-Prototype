@@ -166,7 +166,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 - [x] `TASK-003` Implementar auth base (login, refresh, guard global, roles).
 - [x] `TASK-004` Implementar shell por rol en frontend + route guard.
 - [x] `TASK-005` Integrar tokens base de `Desing system.md` en UI global.
-- [ ] `TASK-006` Configurar CI mínima para PR (`lint` + `test` base).
+- [x] `TASK-006` Configurar CI mínima para PR (`lint` + `test` base).
 
 ### Should
 
@@ -205,7 +205,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - Objetivo del batch: calidad operativa y cierre sprint.
 - Tareas incluidas: `TASK-006`, `TASK-007`, `TASK-008`, `TASK-009`.
-- Resultado: pendiente.
+- Resultado: `TASK-006` completada; `TASK-007`, `TASK-008`, `TASK-009` pendientes.
 - Bloqueos: pendiente.
 
 ---
