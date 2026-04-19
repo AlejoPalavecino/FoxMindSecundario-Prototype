@@ -162,7 +162,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 ### Must
 
 - [x] `TASK-001` Bootstrap `web/api/shared` con scripts y estructura inicial.
-- [ ] `TASK-002` Configurar DB (Supabase + Prisma) con migración inicial y seed.
+- [x] `TASK-002` Configurar DB (Supabase + Prisma) con migración inicial y seed.
 - [ ] `TASK-003` Implementar auth base (login, refresh, guard global, roles).
 - [ ] `TASK-004` Implementar shell por rol en frontend + route guard.
 - [ ] `TASK-005` Integrar tokens base de `Desing system.md` en UI global.
@@ -191,7 +191,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - Objetivo del batch: bootstrap técnico + DB operativa.
 - Tareas incluidas: `TASK-001`, `TASK-002`.
-- Resultado: `TASK-001` completada; `TASK-002` pendiente.
+- Resultado: `TASK-001` y `TASK-002` completadas.
 - Bloqueos: pendiente.
 
 ### Batch 2
