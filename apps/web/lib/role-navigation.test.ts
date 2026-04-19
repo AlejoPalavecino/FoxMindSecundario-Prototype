@@ -30,11 +30,18 @@ describe("role-navigation", () => {
     expect(keys).toEqual(["dashboard", "aulas", "estudia", "mi-progreso", "configuracion"]);
   });
 
-  it("marks only currently available shell routes as enabled", () => {
+  it("keeps all docente sections enabled and alumno shell limited to dashboard", () => {
     const docente = getRoleNavigation("DOCENTE");
     const alumno = getRoleNavigation("ALUMNO");
 
-    expect(docente.items.filter((item) => item.enabled).map((item) => item.href)).toEqual(["/docente"]);
+    expect(docente.items.filter((item) => item.enabled).map((item) => item.href)).toEqual([
+      "/docente",
+      "/docente/aulas",
+      "/docente/agenda",
+      "/docente/progreso",
+      "/docente/copiloto",
+      "/docente/configuracion"
+    ]);
     expect(alumno.items.filter((item) => item.enabled).map((item) => item.href)).toEqual(["/alumno"]);
   });
 
