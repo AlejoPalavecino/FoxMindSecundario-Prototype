@@ -31,11 +31,11 @@ export interface RoleShellMeta {
 
 const DOCENTE_ITEMS: RoleNavigationItem[] = [
   { key: "dashboard", label: "Dashboard", href: "/docente", enabled: true },
-  { key: "aulas", label: "Aulas", href: "/docente/aulas", enabled: false },
-  { key: "agenda", label: "Agenda", href: "/docente/agenda", enabled: false },
-  { key: "progreso", label: "Progreso", href: "/docente/progreso", enabled: false },
-  { key: "copiloto", label: "Copiloto IA", href: "/docente/copiloto", enabled: false },
-  { key: "configuracion", label: "Configuración", href: "/docente/configuracion", enabled: false }
+  { key: "aulas", label: "Aulas", href: "/docente/aulas", enabled: true },
+  { key: "agenda", label: "Agenda", href: "/docente/agenda", enabled: true },
+  { key: "progreso", label: "Progreso", href: "/docente/progreso", enabled: true },
+  { key: "copiloto", label: "Copiloto IA", href: "/docente/copiloto", enabled: true },
+  { key: "configuracion", label: "Configuración", href: "/docente/configuracion", enabled: true }
 ];
 
 const ALUMNO_ITEMS: RoleNavigationItem[] = [
