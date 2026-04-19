@@ -27,6 +27,7 @@ model User {
   tenantId    String       @db.Uuid
   email       String       @unique
   passwordHash String
+  refreshTokenHash String?
   fullName    String
   role        Role
   createdAt   DateTime     @default(now())

@@ -1,8 +1,11 @@
 import { PrismaClient, Role } from "@prisma/client";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const passwordHash = await hash("foxmind123", 10);
+
   const tenant = await prisma.tenant.upsert({
     where: { id: "11111111-1111-1111-1111-111111111111" },
     update: {},
@@ -18,7 +21,7 @@ async function main() {
     create: {
       tenantId: tenant.id,
       email: "docente.demo@foxmind.app",
-      passwordHash: "demo-hash",
+      passwordHash,
       fullName: "Docente Demo",
       role: Role.DOCENTE
     }
@@ -30,7 +33,7 @@ async function main() {
     create: {
       tenantId: tenant.id,
       email: "alumno.demo@foxmind.app",
-      passwordHash: "demo-hash",
+      passwordHash,
       fullName: "Alumno Demo",
       role: Role.ALUMNO
     }

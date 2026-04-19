@@ -163,7 +163,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - [x] `TASK-001` Bootstrap `web/api/shared` con scripts y estructura inicial.
 - [x] `TASK-002` Configurar DB (Supabase + Prisma) con migración inicial y seed.
-- [ ] `TASK-003` Implementar auth base (login, refresh, guard global, roles).
+- [x] `TASK-003` Implementar auth base (login, refresh, guard global, roles).
 - [ ] `TASK-004` Implementar shell por rol en frontend + route guard.
 - [ ] `TASK-005` Integrar tokens base de `Desing system.md` en UI global.
 - [ ] `TASK-006` Configurar CI mínima para PR (`lint` + `test` base).
@@ -198,7 +198,7 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 - Objetivo del batch: auth + shell por rol.
 - Tareas incluidas: `TASK-003`, `TASK-004`, `TASK-005`.
-- Resultado: pendiente.
+- Resultado: `TASK-003` completada; `TASK-004` y `TASK-005` pendientes.
 - Bloqueos: pendiente.
 
 ### Batch 3
