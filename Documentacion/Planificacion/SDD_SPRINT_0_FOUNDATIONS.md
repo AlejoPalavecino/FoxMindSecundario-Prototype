@@ -228,13 +228,13 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 ### Resultado de verificacion
 
-- `CRITICAL`: pendiente.
-- `WARNING`: pendiente.
-- `SUGGESTION`: pendiente.
+- `CRITICAL`: ninguno.
+- `WARNING`: ninguno.
+- `SUGGESTION`: incorporar ejecución automática de `test:e2e` en pipeline cuando exista entorno efímero de DB/API para PR.
 
 ### Decision
 
-- [ ] Aprobado
+- [x] Aprobado
 - [ ] Aprobado con observaciones
 - [ ] Requiere retrabajo
 
@@ -244,22 +244,22 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 ### Resumen de cierre
 
-- Qué se completó: pendiente.
-- Qué no se completó y por qué: pendiente.
+- Qué se completó: `TASK-001` a `TASK-009` completadas (Must, Should y Could), PR de Sprint 0 mergeado en `main` (`#1`, merge commit `a6fe17a`).
+- Qué no se completó y por qué: no aplica en Sprint 0.
 
 ### Deuda técnica generada
 
-- Deuda 1 + plan de pago: pendiente.
+- Deuda 1 + plan de pago: automatizar smoke e2e en CI con entorno provisionado (Sprint 1, hardening de calidad).
 
 ### Aprendizajes
 
-- Aprendizaje 1: pendiente.
-- Aprendizaje 2: pendiente.
+- Aprendizaje 1: usar tipos de dominio compartidos (`@foxmind/shared`) en guards/auth evita fallos de tipado CI por dependencia de código generado.
+- Aprendizaje 2: mantener `SDD_SPRINT_0_FOUNDATIONS.md` actualizado por tarea mejora continuidad real entre dos devs sin pérdida de contexto.
 
 ### Hand-off al próximo sprint
 
 - Inputs: shell por rol + auth + db listos para Sprint 1.
-- Riesgos abiertos: pendientes al cierre.
+- Riesgos abiertos: monitorear ejecución de smoke e2e en entorno integrado y ampliar cobertura funcional de auth.
 
 ---
 
@@ -273,8 +273,8 @@ La propuesta minimiza riesgo de deuda temprana y habilita que un dev o dos devs 
 
 ## Definition of Done (DoD)
 
-- [ ] Todas las `Must` cerradas
-- [ ] Verify sin `CRITICAL`
-- [ ] Evidencia de tests adjunta
-- [ ] UI alineada a `Desing system.md`
-- [ ] Sprint archivado
+- [x] Todas las `Must` cerradas
+- [x] Verify sin `CRITICAL`
+- [x] Evidencia de tests adjunta
+- [x] UI alineada a `Desing system.md`
+- [x] Sprint archivado
