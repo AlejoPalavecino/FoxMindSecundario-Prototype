@@ -1,5 +1,4 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import type { JwtPayload } from "../auth/interfaces/jwt-payload.interface";
 import { ClassroomsLogger } from "./classrooms.logger";
@@ -151,12 +150,9 @@ export class ClassroomsService {
   }
 
   private isDuplicateEnrollmentError(error: unknown) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return error.code === "P2002";
-    }
-
     if (typeof error === "object" && error && "code" in error) {
-      return error.code === "P2002";
+      const candidate = error as { code?: unknown };
+      return candidate.code === "P2002";
     }
 
     return false;
