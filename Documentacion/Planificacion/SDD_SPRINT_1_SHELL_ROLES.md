@@ -3,7 +3,7 @@
 ## 0) Metadata del Sprint
 - `sprint_id`: `sprint-1-shell-roles`
 - `periodo`: `2026-04-27 -> 2026-05-03`
-- `estado`: `aprobado-con-observaciones`
+- `estado`: `aprobado`
 - `scope_mvp`: `Docente + Alumno`
 
 ## 1) Explore
@@ -72,15 +72,23 @@ Escenarios clave:
   - `REQ-003` -> `apps/web/components/roles/role-sidebar-nav.tsx` + `apps/web/middleware.ts` + test `apps/web/components/roles/role-layout-shell.test.tsx`.
   - `REQ-004` -> responsive/focus/semantica en `apps/web/app/globals.css` + `apps/web/components/roles/role-layout-shell.tsx`.
 - Test plan ejecutado: `npm run lint` + `npm run test` (web 31 tests OK, api/shared sin tests con `passWithNoTests`).
+- Smoke browser web ejecutado: `npm run test:smoke:web:sprint1`.
+- Evidencia visual adjunta:
+  - `Documentacion/Evidencias/Sprint-1/01-guard-unauth-docente-desktop.png`
+  - `Documentacion/Evidencias/Sprint-1/02-docente-dashboard-desktop.png`
+  - `Documentacion/Evidencias/Sprint-1/03-docente-aulas-mobile.png`
+  - `Documentacion/Evidencias/Sprint-1/04-alumno-estudia-mobile.png`
+  - `Documentacion/Evidencias/Sprint-1/05-guard-role-alumno-to-docente-redirect.png`
 - Resultado:
   - `CRITICAL`: ninguno.
-  - `WARNING`: faltan smoke browser explicitos para mobile nav/guards web y evidencia visual adjunta en el documento.
-  - `SUGGESTION`: incorporar smoke browser de responsive/guards en sprint siguiente.
-- Decision: `Aprobado con observaciones`.
+  - `WARNING`: ninguno.
+  - `SUGGESTION`: incorporar coverage formal para api/shared en sprint siguiente.
+- Decision: `Aprobado`.
 
 ## 8) Archive
 - Completo/no completo: Sprint 1 completo a nivel implementacion (Must, Should y Could cerradas).
 - Deuda tecnica: agregar smoke browser para comportamiento responsive y guardas de navegacion por rol en web.
+- Deuda tecnica: incorporar tests automatizados en `apps/api` y `packages/shared` para reforzar cobertura de regresion (mejora no bloqueante).
 - Hand-off a Sprint 2: continuar sobre shells estables con foco en logica de negocio por vertical y profundizacion de cobertura.
 
 ## DoR
