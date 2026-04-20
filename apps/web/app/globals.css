@@ -302,6 +302,43 @@ select:focus-visible {
   gap: 12px;
 }
 
+.quick-actions {
+  border: 1px solid var(--color-fox-border);
+  border-radius: 16px;
+  background: var(--color-fox-surface);
+  padding: 16px;
+}
+
+.quick-actions h2 {
+  margin: 0;
+  font-family: var(--font-heading), Montserrat, sans-serif;
+  font-size: 18px;
+}
+
+.quick-actions ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quick-actions a {
+  display: block;
+  border: 1px solid var(--color-fox-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--color-fox-text-main);
+  background: color-mix(in srgb, var(--color-fox-bg) 70%, #fff 30%);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.quick-actions a:hover {
+  background: color-mix(in srgb, var(--color-fox-primary) 14%, var(--color-fox-surface));
+}
+
 .stat-card {
   border: 1px solid var(--color-fox-border);
   border-radius: 16px;
@@ -496,6 +533,10 @@ select:focus-visible {
   }
 
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions ul {
     grid-template-columns: 1fr;
   }
 

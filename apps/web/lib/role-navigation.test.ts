@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getDashboardQuickActions,
   getDefaultPathByRole,
   getRoleNavigation,
   getRoleShellMeta,
@@ -76,5 +77,18 @@ describe("role-navigation", () => {
     expect(isRoleNavItemActive("/docente", "/docente/aulas")).toBe(false);
     expect(isRoleNavItemActive("/alumno/progreso", "/alumno/progreso?tab=semanal")).toBe(true);
     expect(isRoleNavItemActive("/alumno/progreso", "/alumno/progreso-avanzado")).toBe(false);
+  });
+
+  it("returns dashboard quick actions from enabled role navigation", () => {
+    expect(getDashboardQuickActions("DOCENTE").map((item) => item.href)).toEqual([
+      "/docente/aulas",
+      "/docente/agenda",
+      "/docente/progreso"
+    ]);
+    expect(getDashboardQuickActions("ALUMNO").map((item) => item.href)).toEqual([
+      "/alumno/aulas",
+      "/alumno/estudia",
+      "/alumno/progreso"
+    ]);
   });
 });

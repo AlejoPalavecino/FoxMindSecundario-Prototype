@@ -1,9 +1,11 @@
 import React from "react";
 import { DataTable } from "../../components/shared/data-table";
 import { PageHeader } from "../../components/shared/page-header";
+import { QuickActions } from "../../components/shared/quick-actions";
 import { StatusBadge } from "../../components/shared/status-badge";
 import { StatCard } from "../../components/shared/stat-card";
 import { ShellUiStates } from "../../components/shared/shell-ui-states";
+import { getDashboardQuickActions } from "../../lib/role-navigation";
 
 export default function DocenteShellPage() {
   return (
@@ -27,6 +29,7 @@ export default function DocenteShellPage() {
           tone="warning"
         />
       </section>
+      <QuickActions items={getDashboardQuickActions("DOCENTE")} />
       <DataTable
         caption="Próximos hitos del curso"
         columns={[

@@ -61,6 +61,11 @@ const ROLE_META: Record<UserRole, RoleShellMeta> = {
   }
 };
 
+const DASHBOARD_QUICK_ACTION_KEYS: Record<UserRole, RoleNavigationKey[]> = {
+  DOCENTE: ["aulas", "agenda", "progreso"],
+  ALUMNO: ["aulas", "estudia", "mi-progreso"]
+};
+
 export function getRoleNavigation(role: UserRole): RoleNavigation {
   return {
     role,
@@ -70,6 +75,14 @@ export function getRoleNavigation(role: UserRole): RoleNavigation {
 
 export function getRoleShellMeta(role: UserRole): RoleShellMeta {
   return ROLE_META[role];
+}
+
+export function getDashboardQuickActions(role: UserRole): RoleNavigationItem[] {
+  const navigationItems = getRoleNavigation(role).items.filter((item) => item.enabled);
+
+  return DASHBOARD_QUICK_ACTION_KEYS[role]
+    .map((key) => navigationItems.find((item) => item.key === key))
+    .filter((item): item is RoleNavigationItem => Boolean(item));
 }
 
 export function getDefaultPathByRole(role: UserRole) {
