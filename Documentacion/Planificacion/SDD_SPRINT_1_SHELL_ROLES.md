@@ -53,7 +53,7 @@ Escenarios clave:
 - [x] `TASK-008` Storybook o showcase interno de componentes base.
 
 ### Could
-- [ ] `TASK-009` Atajos de navegacion rapida en dashboards.
+- [x] `TASK-009` Atajos de navegacion rapida en dashboards.
 
 ## 6) Apply
 - Batch 1 (completado): layouts por rol Docente/Alumno, config tipada unica de navegacion y base de biblioteca compartida (`PageHeader`, `EmptyState`, `StatusBadge`) integrada en shells actuales.
@@ -63,6 +63,7 @@ Escenarios clave:
 - Batch 4 (completado): se reforzo responsive base desktop/mobile con navegacion usable en mobile (toggle accesible sin desbordes), se incorporo foco visible consistente para elementos interactivos, se mejoro semantica estructural (`aside/main` + skip link) y se resolvio el estado activo de sidebar por subrutas para Docente y Alumno con cobertura de tests de contrato.
 - Batch 5 (completado): se cerro la biblioteca minima shared agregando `StatCard` y `DataTable` base, ambos integrados en los dashboards shell de Docente y Alumno sin alterar rutas/layout, con cobertura de tests de contrato para componentes y render de paginas.
 - Batch 6 (completado): se implemento un set reutilizable de `ModuleSkeleton` por modulo (Docente/Alumno) integrado en el estado loading de todas las shell pages, y se agrego un showcase interno liviano en `/interno/componentes` para `PageHeader`, `EmptyState`, `StatusBadge`, `StatCard`, `DataTable` y skeletons, con cobertura de tests de contrato/render y continuidad de shells.
+- Batch 7 (completado): se implementaron atajos rapidos reutilizables en dashboards Docente y Alumno usando la navegacion tipada por rol (sin hardcode duplicado), con estilos consistentes via tokens existentes y cobertura de tests de contrato para presencia + rutas esperadas; con esto se cierra el batch final de Could (`TASK-009`).
 
 ## 7) Verify
 - Matriz:

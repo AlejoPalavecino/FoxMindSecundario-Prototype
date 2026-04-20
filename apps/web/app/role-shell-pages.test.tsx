@@ -28,6 +28,13 @@ describe("role shell pages", () => {
     expect(html).toContain("Dashboard Docente");
     expect(html).toContain("Asistencia promedio");
     expect(html).toContain("Próximos hitos del curso");
+    expect(html).toContain("Atajos rápidos");
+    expect(html).toContain("Ir a Aulas");
+    expect(html).toContain("href=\"/docente/aulas\"");
+    expect(html).toContain("Ir a Agenda");
+    expect(html).toContain("href=\"/docente/agenda\"");
+    expect(html).toContain("Ir a Progreso");
+    expect(html).toContain("href=\"/docente/progreso\"");
     expectStatesContract(html, "dashboard docente");
   });
 
@@ -37,6 +44,13 @@ describe("role shell pages", () => {
     expect(html).toContain("Dashboard Alumno");
     expect(html).toContain("Racha de estudio");
     expect(html).toContain("Próximas actividades");
+    expect(html).toContain("Atajos rápidos");
+    expect(html).toContain("Ir a Aulas");
+    expect(html).toContain("href=\"/alumno/aulas\"");
+    expect(html).toContain("Ir a EstudIA");
+    expect(html).toContain("href=\"/alumno/estudia\"");
+    expect(html).toContain("Ir a Mi Progreso");
+    expect(html).toContain("href=\"/alumno/progreso\"");
     expectStatesContract(html, "dashboard alumno");
   });
 
