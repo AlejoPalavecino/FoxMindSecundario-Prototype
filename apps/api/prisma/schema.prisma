@@ -20,6 +20,7 @@ model Tenant {
   updatedAt  DateTime    @updatedAt
   users      User[]
   classrooms Classroom[]
+  enrollments Enrollment[]
 }
 
 model User {
@@ -62,6 +63,7 @@ model Enrollment {
   classroomId String    @db.Uuid
   studentId   String    @db.Uuid
   createdAt   DateTime  @default(now())
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
