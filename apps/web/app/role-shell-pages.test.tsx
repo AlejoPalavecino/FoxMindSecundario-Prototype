@@ -98,7 +98,8 @@ describe("role shell pages", () => {
     const html = renderToStaticMarkup(<AlumnoAulasPage />);
 
     expect(html).toContain("Aulas");
-    expectStatesContract(html, "aulas alumno");
+    expect(html).toContain("Estado: Cargando");
+    expect(html).toContain("Cargando aulas y contenidos disponibles.");
   });
 
   it("renders alumno EstudIA shell page with shared components", () => {

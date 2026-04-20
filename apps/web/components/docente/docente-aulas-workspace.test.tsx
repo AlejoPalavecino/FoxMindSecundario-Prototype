@@ -28,6 +28,8 @@ describe("docente aulas workspace", () => {
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
       enrollmentForm: { studentId: "" },
+      csvForm: { fileName: "", csvContent: "" },
+      csvReport: null,
       feedback: null
     });
 
@@ -46,6 +48,8 @@ describe("docente aulas workspace", () => {
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
       enrollmentForm: { studentId: "student-1" },
+      csvForm: { fileName: "", csvContent: "" },
+      csvReport: null,
       feedback: {
         tone: "warning",
         message: "El alumno ya estaba enrolado en esta aula."
@@ -54,5 +58,39 @@ describe("docente aulas workspace", () => {
 
     expect(html).toContain("Estado: Atención");
     expect(html).toContain("El alumno ya estaba enrolado en esta aula.");
+  });
+
+  it("renders csv import report with row-level errors", () => {
+    const html = renderWorkspace({
+      uiState: "success",
+      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", studentIds: [] }],
+      selectedClassroomId: "class-1",
+      createForm: { name: "", subject: "" },
+      editForm: { name: "2A", subject: "Matemática" },
+      enrollmentForm: { studentId: "" },
+      csvForm: { fileName: "alumnos.csv", csvContent: "email,fullName" },
+      csvReport: {
+        processed: 2,
+        createdUsers: 1,
+        createdEnrollments: 1,
+        errors: [
+          {
+            line: 3,
+            code: "DUPLICATE_ENROLLMENT",
+            message: "El alumno ya estaba enrolado en esta aula"
+          }
+        ]
+      },
+      feedback: {
+        tone: "warning",
+        message: "Importación finalizada con observaciones."
+      }
+    });
+
+    expect(html).toContain("Importar CSV");
+    expect(html).toContain("alumnos.csv");
+    expect(html).toContain("Filas procesadas: 2");
+    expect(html).toContain("Línea 3");
+    expect(html).toContain("DUPLICATE_ENROLLMENT");
   });
 });

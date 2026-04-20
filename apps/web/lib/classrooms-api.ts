@@ -23,6 +23,30 @@ export interface CreateEnrollmentResponse {
   enrollmentId: string;
 }
 
+export interface ImportEnrollmentsCsvPayload {
+  csvContent: string;
+}
+
+export interface CsvImportError {
+  line: number;
+  code: string;
+  message: string;
+}
+
+export interface ImportEnrollmentsCsvResponse {
+  processed: number;
+  createdUsers: number;
+  createdEnrollments: number;
+  errors: CsvImportError[];
+}
+
+export interface StudentClassroom {
+  id: string;
+  name: string;
+  subject: string;
+  enrollmentId: string;
+}
+
 export interface EnrollmentNotice {
   tone: "success" | "warning";
   message: string;
@@ -70,6 +94,20 @@ export async function createEnrollment(
     method: "POST",
     body: JSON.stringify(payload)
   });
+}
+
+export async function importEnrollmentsCsv(
+  classroomId: string,
+  payload: ImportEnrollmentsCsvPayload
+): Promise<ImportEnrollmentsCsvResponse> {
+  return requestJson<ImportEnrollmentsCsvResponse>(`/classrooms/${classroomId}/enrollments/csv`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function fetchStudentClassrooms(): Promise<StudentClassroom[]> {
+  return requestJson<StudentClassroom[]>("/student/classrooms", { method: "GET" });
 }
 
 export function resolveEnrollmentNotice(result: CreateEnrollmentResponse): EnrollmentNotice {

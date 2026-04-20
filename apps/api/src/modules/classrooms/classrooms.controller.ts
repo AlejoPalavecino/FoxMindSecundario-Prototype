@@ -5,6 +5,7 @@ import { ClassroomsService } from "./classrooms.service";
 import { CreateClassroomDto } from "./dto/create-classroom.dto";
 import { UpdateClassroomDto } from "./dto/update-classroom.dto";
 import { CreateEnrollmentDto } from "./dto/create-enrollment.dto";
+import { ImportEnrollmentsCsvDto } from "./dto/import-enrollments-csv.dto";
 
 @Controller("classrooms")
 @Roles("DOCENTE")
@@ -32,5 +33,14 @@ export class ClassroomsController {
     @Req() request: { user: JwtPayload }
   ) {
     return this.classroomsService.createEnrollment(id, dto, request.user);
+  }
+
+  @Post(":id/enrollments/csv")
+  importEnrollmentsCsv(
+    @Param("id") id: string,
+    @Body() dto: ImportEnrollmentsCsvDto,
+    @Req() request: { user: JwtPayload }
+  ) {
+    return this.classroomsService.importEnrollmentsFromCsv(id, dto, request.user);
   }
 }

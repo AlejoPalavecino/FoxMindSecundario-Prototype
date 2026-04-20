@@ -4,12 +4,14 @@ import { describe, expect, it, vi } from "vitest";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import type { JwtPayload } from "../auth/interfaces/jwt-payload.interface";
 import { ClassroomsController } from "./classrooms.controller";
+import { StudentClassroomsController } from "./student-classrooms.controller";
 
 type MockExecutionContextInput = {
   user?: JwtPayload;
   method?: string;
   url?: string;
   handler: (...args: any[]) => unknown;
+  controllerClass: unknown;
 };
 
 function createExecutionContext(input: MockExecutionContextInput) {
@@ -21,7 +23,7 @@ function createExecutionContext(input: MockExecutionContextInput) {
 
   return {
     getHandler: () => input.handler,
-    getClass: () => ClassroomsController,
+    getClass: () => input.controllerClass,
     switchToHttp: () => ({
       getRequest: () => request
     })
@@ -51,7 +53,8 @@ describe("Classrooms permissions integration", () => {
     const guard = new RolesGuard(new Reflector(), authLogger as never);
     const context = createExecutionContext({
       user: docenteUser,
-      handler: ClassroomsController.prototype.createClassroom
+      handler: ClassroomsController.prototype.createClassroom,
+      controllerClass: ClassroomsController
     });
 
     const allowed = guard.canActivate(context);
@@ -64,7 +67,8 @@ describe("Classrooms permissions integration", () => {
     const context = createExecutionContext({
       user: alumnoUser,
       handler: ClassroomsController.prototype.createEnrollment,
-      url: "/api/classrooms/classroom-1/enrollments"
+      url: "/api/classrooms/classroom-1/enrollments",
+      controllerClass: ClassroomsController
     });
 
     let thrownError: unknown;
@@ -83,6 +87,51 @@ describe("Classrooms permissions integration", () => {
         actorUserId: alumnoUser.sub,
         role: alumnoUser.role,
         resourceId: "/api/classrooms/classroom-1/enrollments"
+      })
+    );
+  });
+
+  it("allows ALUMNO in student classrooms endpoint", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: alumnoUser,
+      method: "GET",
+      url: "/api/student/classrooms",
+      handler: StudentClassroomsController.prototype.getStudentClassrooms,
+      controllerClass: StudentClassroomsController
+    });
+
+    const allowed = guard.canActivate(context);
+
+    expect(allowed).toBe(true);
+  });
+
+  it("rejects DOCENTE with 403 in student classrooms endpoint", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: docenteUser,
+      method: "GET",
+      url: "/api/student/classrooms",
+      handler: StudentClassroomsController.prototype.getStudentClassrooms,
+      controllerClass: StudentClassroomsController
+    });
+
+    let thrownError: unknown;
+    try {
+      guard.canActivate(context);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(ForbiddenException);
+    expect((thrownError as ForbiddenException).getStatus()).toBe(403);
+    expect(authLogger.warn).toHaveBeenCalledWith(
+      "auth.guard.role.rejected",
+      expect.objectContaining({
+        tenantId: docenteUser.tenantId,
+        actorUserId: docenteUser.sub,
+        role: docenteUser.role,
+        resourceId: "/api/student/classrooms"
       })
     );
   });
