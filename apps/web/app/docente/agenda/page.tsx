@@ -13,6 +13,7 @@ export default function DocenteAgendaPage() {
       />
       <ShellUiStates
         basePath="/docente/agenda"
+        loadingSkeleton="docente-agenda"
         loadingDescription="Cargando agenda de clases y eventos."
         errorDescription="No pudimos actualizar la agenda docente."
         successDescription="Agenda disponible para gestionar el calendario académico."

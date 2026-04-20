@@ -13,6 +13,7 @@ export default function AlumnoEstudiaPage() {
       />
       <ShellUiStates
         basePath="/alumno/estudia"
+        loadingSkeleton="alumno-estudia"
         loadingDescription="Cargando sugerencias de estudio personalizadas."
         errorDescription="No pudimos recuperar las recomendaciones de EstudIA."
         successDescription="EstudIA operativo para ayudarte con tu plan de estudio."

@@ -41,6 +41,7 @@ export default function AlumnoShellPage() {
       />
       <ShellUiStates
         basePath="/alumno"
+        loadingSkeleton="alumno-dashboard"
         loadingDescription="Cargando resumen de cursada y próximos objetivos."
         errorDescription="No pudimos recuperar la vista principal del alumno."
         successDescription="Panel alumno operativo para seguimiento diario."

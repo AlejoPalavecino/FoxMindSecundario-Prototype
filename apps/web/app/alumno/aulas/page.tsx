@@ -13,6 +13,7 @@ export default function AlumnoAulasPage() {
       />
       <ShellUiStates
         basePath="/alumno/aulas"
+        loadingSkeleton="alumno-aulas"
         loadingDescription="Cargando aulas y contenidos disponibles."
         errorDescription="No pudimos cargar tus aulas en este momento."
         successDescription="Aulas del alumno disponibles para continuar la cursada."

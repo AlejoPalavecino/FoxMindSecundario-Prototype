@@ -41,6 +41,7 @@ export default function DocenteShellPage() {
       />
       <ShellUiStates
         basePath="/docente"
+        loadingSkeleton="docente-dashboard"
         loadingDescription="Cargando resumen del panel docente."
         errorDescription="No pudimos cargar el panel docente en este momento."
         successDescription="Dashboard docente operativo para integrar modulos del sprint."
