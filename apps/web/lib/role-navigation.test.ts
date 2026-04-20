@@ -3,6 +3,7 @@ import {
   getDefaultPathByRole,
   getRoleNavigation,
   getRoleShellMeta,
+  isRoleNavItemActive,
   type RoleNavigationKey
 } from "./role-navigation";
 
@@ -67,5 +68,13 @@ describe("role-navigation", () => {
 
     expect(getDefaultPathByRole("DOCENTE")).toBe("/docente");
     expect(getDefaultPathByRole("ALUMNO")).toBe("/alumno");
+  });
+
+  it("marks active navigation items for nested subroutes", () => {
+    expect(isRoleNavItemActive("/docente", "/docente")).toBe(true);
+    expect(isRoleNavItemActive("/docente/aulas", "/docente/aulas/123")).toBe(true);
+    expect(isRoleNavItemActive("/docente", "/docente/aulas")).toBe(false);
+    expect(isRoleNavItemActive("/alumno/progreso", "/alumno/progreso?tab=semanal")).toBe(true);
+    expect(isRoleNavItemActive("/alumno/progreso", "/alumno/progreso-avanzado")).toBe(false);
   });
 });

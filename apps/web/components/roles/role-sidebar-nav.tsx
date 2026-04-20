@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
+import { useState } from "react";
 import type { UserRole } from "@foxmind/shared";
-import { getRoleNavigation } from "../../lib/role-navigation";
+import { getRoleNavigation, isRoleNavItemActive } from "../../lib/role-navigation";
 
 interface RoleSidebarNavProps {
   role: UserRole;
@@ -9,12 +12,24 @@ interface RoleSidebarNavProps {
 
 export function RoleSidebarNav({ role, currentPath }: RoleSidebarNavProps) {
   const navigation = getRoleNavigation(role);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const resolvedPath = currentPath ?? (typeof window !== "undefined" ? window.location.pathname : undefined);
 
   return (
     <nav className="role-nav" aria-label={`Navegación ${role.toLowerCase()}`}>
-      <ul>
+      <button
+        type="button"
+        className="role-nav-toggle"
+        aria-label="Abrir menú de navegación"
+        aria-expanded={isMobileOpen}
+        aria-controls="role-nav-list"
+        onClick={() => setIsMobileOpen((value) => !value)}
+      >
+        Menú
+      </button>
+      <ul id="role-nav-list" data-mobile-open={isMobileOpen}>
         {navigation.items.map((item) => {
-          const isActive = item.href === currentPath;
+          const isActive = isRoleNavItemActive(item.href, resolvedPath);
 
           return (
             <li key={item.key}>

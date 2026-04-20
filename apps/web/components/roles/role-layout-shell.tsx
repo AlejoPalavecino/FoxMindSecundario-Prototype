@@ -15,17 +15,20 @@ export function RoleLayoutShell({ role, currentPath, children }: RoleLayoutShell
 
   return (
     <div className={`role-layout role-layout-${meta.accent}`}>
-      <aside>
+      <a className="skip-link" href="#role-main-content">
+        Saltar al contenido principal
+      </a>
+      <aside aria-label={`Navegación principal ${role.toLowerCase()}`}>
         <div className="role-branding">
           <strong>FoxMind</strong>
           <p>{meta.title}</p>
         </div>
         <RoleSidebarNav role={role} currentPath={currentPath} />
       </aside>
-      <div className="role-content">
+      <main id="role-main-content" className="role-content">
         <p className="role-subtitle">{meta.subtitle}</p>
         {children}
-      </div>
+      </main>
     </div>
   );
 }

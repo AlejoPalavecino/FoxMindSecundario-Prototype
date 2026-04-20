@@ -39,5 +39,10 @@ describe("role layout shell", () => {
 
     expect(html).toContain("Panel Alumno");
     expect(html).toContain("Contenido alumno");
+    expect(html).toContain('href="#role-main-content"');
+    expect(html).toContain('id="role-main-content"');
+    expect(html).toContain("Navegación principal alumno");
+    expect(html).toContain('aria-label="Abrir menú de navegación"');
+    expect(html).toContain('aria-controls="role-nav-list"');
   });
 });
