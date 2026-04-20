@@ -2,8 +2,10 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { EmptyState } from "./empty-state";
+import { DataTable } from "./data-table";
 import { PageHeader } from "./page-header";
 import { ShellUiStates } from "./shell-ui-states";
+import { StatCard } from "./stat-card";
 import { StatusBadge, resolveStatusBadge } from "./status-badge";
 
 describe("shared shell ui", () => {
@@ -63,5 +65,68 @@ describe("shared shell ui", () => {
     expect(html).toContain("Estado: Error");
     expect(html).toContain("Estado: Operativo");
     expect(html).toContain("Sin contenido disponible");
+  });
+
+  it("renders stat card with value and helper description", () => {
+    const html = renderToStaticMarkup(
+      <StatCard
+        title="Asistencia promedio"
+        value="94%"
+        description="Promedio semanal"
+        tone="success"
+      />
+    );
+
+    expect(html).toContain("Asistencia promedio");
+    expect(html).toContain("94%");
+    expect(html).toContain("Promedio semanal");
+    expect(html).toContain("aria-label=\"Métrica: Asistencia promedio\"");
+  });
+
+  it("renders stat card without optional description", () => {
+    const html = renderToStaticMarkup(<StatCard title="Pendientes" value="2" />);
+
+    expect(html).toContain("Pendientes");
+    expect(html).toContain("2");
+    expect(html).not.toContain("stat-card-description");
+  });
+
+  it("renders data table with headers and rows", () => {
+    const html = renderToStaticMarkup(
+      <DataTable
+        caption="Próximas entregas"
+        columns={[
+          { key: "curso", header: "Curso" },
+          { key: "fecha", header: "Fecha" }
+        ]}
+        rows={[
+          { id: "1", curso: "Matemática 3A", fecha: "Lunes" },
+          { id: "2", curso: "Historia 2B", fecha: "Miércoles" }
+        ]}
+      />
+    );
+
+    expect(html).toContain("Próximas entregas");
+    expect(html).toContain("Curso");
+    expect(html).toContain("Fecha");
+    expect(html).toContain("Matemática 3A");
+    expect(html).toContain("Historia 2B");
+  });
+
+  it("renders data table empty fallback when there are no rows", () => {
+    const html = renderToStaticMarkup(
+      <DataTable
+        caption="Próximas entregas"
+        columns={[
+          { key: "curso", header: "Curso" },
+          { key: "fecha", header: "Fecha" }
+        ]}
+        rows={[]}
+        emptyMessage="Sin pendientes"
+      />
+    );
+
+    expect(html).toContain("Sin pendientes");
+    expect(html).toContain("aria-live=\"polite\"");
   });
 });

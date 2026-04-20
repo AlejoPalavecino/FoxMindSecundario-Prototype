@@ -1,6 +1,8 @@
 import React from "react";
+import { DataTable } from "../../components/shared/data-table";
 import { PageHeader } from "../../components/shared/page-header";
 import { StatusBadge } from "../../components/shared/status-badge";
+import { StatCard } from "../../components/shared/stat-card";
 import { ShellUiStates } from "../../components/shared/shell-ui-states";
 
 export default function DocenteShellPage() {
@@ -10,6 +12,32 @@ export default function DocenteShellPage() {
         title="Dashboard Docente"
         subtitle="Vista inicial del shell para preparar modulos del Sprint 1."
         actions={<StatusBadge status="ok" />}
+      />
+      <section className="stats-grid" aria-label="Resumen rápido docente">
+        <StatCard
+          title="Asistencia promedio"
+          value="94%"
+          description="Últimos 7 días"
+          tone="success"
+        />
+        <StatCard
+          title="Alertas pedagógicas"
+          value="3"
+          description="Requieren seguimiento"
+          tone="warning"
+        />
+      </section>
+      <DataTable
+        caption="Próximos hitos del curso"
+        columns={[
+          { key: "curso", header: "Curso" },
+          { key: "hito", header: "Hito" },
+          { key: "fecha", header: "Fecha" }
+        ]}
+        rows={[
+          { id: "d-1", curso: "Matemática 3A", hito: "Entrega TP 4", fecha: "Lun 10:30" },
+          { id: "d-2", curso: "Historia 2B", hito: "Repaso parcial", fecha: "Mié 08:00" }
+        ]}
       />
       <ShellUiStates
         basePath="/docente"

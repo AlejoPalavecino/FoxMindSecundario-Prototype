@@ -1,6 +1,8 @@
 import React from "react";
+import { DataTable } from "../../components/shared/data-table";
 import { PageHeader } from "../../components/shared/page-header";
 import { StatusBadge } from "../../components/shared/status-badge";
+import { StatCard } from "../../components/shared/stat-card";
 import { ShellUiStates } from "../../components/shared/shell-ui-states";
 
 export default function AlumnoShellPage() {
@@ -10,6 +12,32 @@ export default function AlumnoShellPage() {
         title="Dashboard Alumno"
         subtitle="Vista inicial del shell para preparar aulas, EstudIA y progreso."
         actions={<StatusBadge status="warning" />}
+      />
+      <section className="stats-grid" aria-label="Resumen rápido alumno">
+        <StatCard
+          title="Racha de estudio"
+          value="5 días"
+          description="Constancia semanal"
+          tone="success"
+        />
+        <StatCard
+          title="Pendientes"
+          value="2"
+          description="Actividades por entregar"
+          tone="warning"
+        />
+      </section>
+      <DataTable
+        caption="Próximas actividades"
+        columns={[
+          { key: "materia", header: "Materia" },
+          { key: "actividad", header: "Actividad" },
+          { key: "vence", header: "Vence" }
+        ]}
+        rows={[
+          { id: "a-1", materia: "Lengua", actividad: "Foro argumentativo", vence: "Mar 18:00" },
+          { id: "a-2", materia: "Biología", actividad: "Cuestionario células", vence: "Jue 21:00" }
+        ]}
       />
       <ShellUiStates
         basePath="/alumno"
