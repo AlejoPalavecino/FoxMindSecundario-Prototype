@@ -25,6 +25,8 @@ describe("role shell pages", () => {
     const html = renderToStaticMarkup(<DocenteShellPage />);
 
     expect(html).toContain("Dashboard Docente");
+    expect(html).toContain("Asistencia promedio");
+    expect(html).toContain("Próximos hitos del curso");
     expectStatesContract(html);
   });
 
@@ -32,6 +34,8 @@ describe("role shell pages", () => {
     const html = renderToStaticMarkup(<AlumnoShellPage />);
 
     expect(html).toContain("Dashboard Alumno");
+    expect(html).toContain("Racha de estudio");
+    expect(html).toContain("Próximas actividades");
     expectStatesContract(html);
   });
 

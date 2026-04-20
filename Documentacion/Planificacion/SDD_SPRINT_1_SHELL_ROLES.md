@@ -45,7 +45,7 @@ Escenarios clave:
 - [x] `TASK-002` Crear todas las vistas shell requeridas para Docente.
 - [x] `TASK-003` Crear todas las vistas shell requeridas para Alumno.
 - [x] `TASK-004` Implementar estados `empty/loading/error/success` en todas las vistas.
-- [ ] `TASK-005` Crear biblioteca minima de componentes compartidos.
+- [x] `TASK-005` Crear biblioteca minima de componentes compartidos.
 - [x] `TASK-006` Validar responsive base desktop/mobile.
 
 ### Should
@@ -61,6 +61,7 @@ Escenarios clave:
 - Batch 2 (completado): se crearon shells Docente para Dashboard, Aulas, Agenda, Progreso, Copiloto IA y Configuracion; se habilitaron estas rutas en la navegacion docente tipada y se cubrieron tests de render/navegacion para evitar secciones rotas.
 - Batch 3 (completado): se crearon shells Alumno para Dashboard, Aulas, EstudIA, Mi Progreso y Configuracion; se habilitaron todas las rutas Alumno en la navegacion tipada y se aplico un patron reutilizable de estados UI (`loading/error/success/empty`) en todas las vistas shell Docente+Alumno con cobertura de tests de contrato.
 - Batch 4 (completado): se reforzo responsive base desktop/mobile con navegacion usable en mobile (toggle accesible sin desbordes), se incorporo foco visible consistente para elementos interactivos, se mejoro semantica estructural (`aside/main` + skip link) y se resolvio el estado activo de sidebar por subrutas para Docente y Alumno con cobertura de tests de contrato.
+- Batch 5 (completado): se cerro la biblioteca minima shared agregando `StatCard` y `DataTable` base, ambos integrados en los dashboards shell de Docente y Alumno sin alterar rutas/layout, con cobertura de tests de contrato para componentes y render de paginas.
 
 ## 7) Verify
 - Matriz:
