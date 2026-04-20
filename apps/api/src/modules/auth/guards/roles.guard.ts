@@ -31,6 +31,11 @@ export class RolesGuard implements CanActivate {
     const userRole = request.user?.role;
     if (!userRole || !requiredRoles.includes(userRole)) {
       this.authLogger.warn("auth.guard.role.rejected", {
+        tenantId: request.user?.tenantId ?? "unknown",
+        actorUserId: request.user?.sub ?? "anonymous",
+        role: request.user?.role ?? "unknown",
+        resourceId: request.url ?? "unknown",
+        timestamp: new Date().toISOString(),
         method: request.method,
         path: request.url,
         userRole,

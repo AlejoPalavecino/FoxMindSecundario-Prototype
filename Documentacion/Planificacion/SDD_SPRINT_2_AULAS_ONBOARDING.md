@@ -78,13 +78,13 @@ Escenarios:
 
 ## 5) Tasks
 ### Must
-- [ ] `TASK-001` Modelo y migraciones de Classroom/Enrollment.
-- [ ] `TASK-002` Endpoints de aula y enrollment con permisos por rol.
+- [x] `TASK-001` Modelo y migraciones de Classroom/Enrollment.
+- [x] `TASK-002` Endpoints de aula y enrollment con permisos por rol.
 - [ ] `TASK-003` UI Docente para crear/editar aula.
 - [ ] `TASK-004` UI Docente para alta manual de alumno.
 - [ ] `TASK-005` Import CSV MVP con reporte de errores.
 - [ ] `TASK-006` UI Alumno para visualizar aulas asignadas.
-- [ ] `TASK-007` Tests integration de enrollment y permisos.
+- [ ] `TASK-007` Tests integration de enrollment y permisos. (parcial: base API de enrollment/permisos cubierta en Batch 1)
 
 ### Should
 - [ ] `TASK-008` Busqueda/filtro en listado de alumnos de aula.
@@ -95,6 +95,11 @@ Escenarios:
 ## 6) Apply
 - Batch 0 (completado): acuerdos operativos cerrados (contrato CSV, matriz permisos, logging minimo y evidencia de verify).
 - Batch 1: DB + API core.
+  - Resultado Batch 1:
+    - `TASK-001` completada: relation `Enrollment -> Tenant` agregada en Prisma y migracion SQL incremental con FK; constraint unico de duplicado por aula-alumno validado (`@@unique([classroomId, studentId])`).
+    - `TASK-002` completada: endpoints `POST /classrooms`, `PATCH /classrooms/:id`, `POST /classrooms/:id/enrollments` implementados con `@Roles("DOCENTE")`, aislamiento por `tenantId` y control de duplicados de enrollment.
+    - Logging minimo aplicado para `classroom.created`, `classroom.updated`, `enrollment.created` y `auth.guard.role.rejected` con metadata minima (`event`, `tenantId`, `actorUserId`, `role`, `resourceId`, `timestamp`).
+    - `TASK-007` avance parcial: base de tests de integracion para permisos (403 ALUMNO) y enrollment (positivo DOCENTE + duplicado consistente) implementada para core API de este batch.
 - Batch 2: UI docente (aulas + enrollment manual).
 - Batch 3: CSV + UI alumno + pruebas.
 

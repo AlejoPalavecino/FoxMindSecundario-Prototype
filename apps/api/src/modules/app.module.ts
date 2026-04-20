@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
+import { ClassroomsModule } from "./classrooms/classrooms.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
@@ -11,7 +12,8 @@ import { PrismaModule } from "./prisma/prisma.module";
       envFilePath: ["apps/api/.env", ".env"]
     }),
     PrismaModule,
-    AuthModule
+    AuthModule,
+    ClassroomsModule
   ],
   controllers: [AppController]
 })
