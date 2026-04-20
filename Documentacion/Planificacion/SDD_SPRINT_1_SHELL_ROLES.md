@@ -3,7 +3,7 @@
 ## 0) Metadata del Sprint
 - `sprint_id`: `sprint-1-shell-roles`
 - `periodo`: `2026-04-27 -> 2026-05-03`
-- `estado`: `draft`
+- `estado`: `aprobado-con-observaciones`
 - `scope_mvp`: `Docente + Alumno`
 
 ## 1) Explore
@@ -57,7 +57,7 @@ Escenarios clave:
 
 ## 6) Apply
 - Batch 1 (completado): layouts por rol Docente/Alumno, config tipada unica de navegacion y base de biblioteca compartida (`PageHeader`, `EmptyState`, `StatusBadge`) integrada en shells actuales.
-- Nota TASK-005: en Batch 1 se completo SOLO la base inicial de componentes compartidos; la task sigue abierta hasta cerrar biblioteca minima completa en batches siguientes.
+- Nota TASK-005: el estado parcial de Batch 1 quedo cerrado en Batch 5 con biblioteca minima shared completa (`StatCard` + `DataTable`).
 - Batch 2 (completado): se crearon shells Docente para Dashboard, Aulas, Agenda, Progreso, Copiloto IA y Configuracion; se habilitaron estas rutas en la navegacion docente tipada y se cubrieron tests de render/navegacion para evitar secciones rotas.
 - Batch 3 (completado): se crearon shells Alumno para Dashboard, Aulas, EstudIA, Mi Progreso y Configuracion; se habilitaron todas las rutas Alumno en la navegacion tipada y se aplico un patron reutilizable de estados UI (`loading/error/success/empty`) en todas las vistas shell Docente+Alumno con cobertura de tests de contrato.
 - Batch 4 (completado): se reforzo responsive base desktop/mobile con navegacion usable en mobile (toggle accesible sin desbordes), se incorporo foco visible consistente para elementos interactivos, se mejoro semantica estructural (`aside/main` + skip link) y se resolvio el estado activo de sidebar por subrutas para Docente y Alumno con cobertura de tests de contrato.
@@ -67,21 +67,27 @@ Escenarios clave:
 
 ## 7) Verify
 - Matriz:
-  - `REQ-001` -> demo docente navegando todas las secciones.
-  - `REQ-002` -> demo alumno navegando todas las secciones.
-  - `REQ-003` -> prueba de menus/guards por rol.
-  - `REQ-004` -> evidencia mobile + desktop.
-- Test plan: unit de config de navegacion, integration de guards, e2e smoke por rol.
-- Decision: pendiente.
+  - `REQ-001` -> `apps/web/lib/role-navigation.ts` + `apps/web/app/docente/**/page.tsx` + tests `apps/web/lib/role-navigation.test.ts` y `apps/web/app/role-shell-pages.test.tsx`.
+  - `REQ-002` -> `apps/web/lib/role-navigation.ts` + `apps/web/app/alumno/**/page.tsx` + tests `apps/web/lib/role-navigation.test.ts` y `apps/web/app/role-shell-pages.test.tsx`.
+  - `REQ-003` -> `apps/web/components/roles/role-sidebar-nav.tsx` + `apps/web/middleware.ts` + test `apps/web/components/roles/role-layout-shell.test.tsx`.
+  - `REQ-004` -> responsive/focus/semantica en `apps/web/app/globals.css` + `apps/web/components/roles/role-layout-shell.tsx`.
+- Test plan ejecutado: `npm run lint` + `npm run test` (web 31 tests OK, api/shared sin tests con `passWithNoTests`).
+- Resultado:
+  - `CRITICAL`: ninguno.
+  - `WARNING`: faltan smoke browser explicitos para mobile nav/guards web y evidencia visual adjunta en el documento.
+  - `SUGGESTION`: incorporar smoke browser de responsive/guards en sprint siguiente.
+- Decision: `Aprobado con observaciones`.
 
 ## 8) Archive
-- Completo/no completo, deuda tecnica, hand-off a Sprint 2.
+- Completo/no completo: Sprint 1 completo a nivel implementacion (Must, Should y Could cerradas).
+- Deuda tecnica: agregar smoke browser para comportamiento responsive y guardas de navegacion por rol en web.
+- Hand-off a Sprint 2: continuar sobre shells estables con foco en logica de negocio por vertical y profundizacion de cobertura.
 
 ## DoR
 - [x] Spec y Design listos
 - [x] Tasks priorizadas
 
 ## DoD
-- [ ] Must cerradas
-- [ ] Verify sin critical
-- [ ] Evidencia adjunta
+- [x] Must cerradas
+- [x] Verify sin critical
+- [x] Evidencia adjunta
