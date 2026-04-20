@@ -75,3 +75,29 @@ export function getRoleShellMeta(role: UserRole): RoleShellMeta {
 export function getDefaultPathByRole(role: UserRole) {
   return role === "DOCENTE" ? "/docente" : "/alumno";
 }
+
+function normalizePath(path: string) {
+  const pathname = path.split(/[?#]/)[0] ?? "/";
+  const normalized = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
+
+  return normalized || "/";
+}
+
+export function isRoleNavItemActive(itemHref: string, currentPath?: string) {
+  if (!currentPath) {
+    return false;
+  }
+
+  const normalizedItemHref = normalizePath(itemHref);
+  const normalizedCurrentPath = normalizePath(currentPath);
+
+  if (normalizedCurrentPath === normalizedItemHref) {
+    return true;
+  }
+
+  if (normalizedItemHref === "/docente" || normalizedItemHref === "/alumno") {
+    return false;
+  }
+
+  return normalizedCurrentPath.startsWith(`${normalizedItemHref}/`);
+}
