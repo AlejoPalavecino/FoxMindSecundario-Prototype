@@ -49,8 +49,8 @@ Escenarios clave:
 - [x] `TASK-006` Validar responsive base desktop/mobile.
 
 ### Should
-- [ ] `TASK-007` Skeletons reutilizables por modulo.
-- [ ] `TASK-008` Storybook o showcase interno de componentes base.
+- [x] `TASK-007` Skeletons reutilizables por modulo.
+- [x] `TASK-008` Storybook o showcase interno de componentes base.
 
 ### Could
 - [ ] `TASK-009` Atajos de navegacion rapida en dashboards.
@@ -62,6 +62,7 @@ Escenarios clave:
 - Batch 3 (completado): se crearon shells Alumno para Dashboard, Aulas, EstudIA, Mi Progreso y Configuracion; se habilitaron todas las rutas Alumno en la navegacion tipada y se aplico un patron reutilizable de estados UI (`loading/error/success/empty`) en todas las vistas shell Docente+Alumno con cobertura de tests de contrato.
 - Batch 4 (completado): se reforzo responsive base desktop/mobile con navegacion usable en mobile (toggle accesible sin desbordes), se incorporo foco visible consistente para elementos interactivos, se mejoro semantica estructural (`aside/main` + skip link) y se resolvio el estado activo de sidebar por subrutas para Docente y Alumno con cobertura de tests de contrato.
 - Batch 5 (completado): se cerro la biblioteca minima shared agregando `StatCard` y `DataTable` base, ambos integrados en los dashboards shell de Docente y Alumno sin alterar rutas/layout, con cobertura de tests de contrato para componentes y render de paginas.
+- Batch 6 (completado): se implemento un set reutilizable de `ModuleSkeleton` por modulo (Docente/Alumno) integrado en el estado loading de todas las shell pages, y se agrego un showcase interno liviano en `/interno/componentes` para `PageHeader`, `EmptyState`, `StatusBadge`, `StatCard`, `DataTable` y skeletons, con cobertura de tests de contrato/render y continuidad de shells.
 
 ## 7) Verify
 - Matriz:

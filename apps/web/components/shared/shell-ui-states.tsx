@@ -1,9 +1,12 @@
 import React from "react";
 import { EmptyState } from "./empty-state";
+import type { ShellModuleSkeletonKey } from "./module-skeleton";
+import { ModuleSkeleton } from "./module-skeleton";
 import { StatusBadge } from "./status-badge";
 
 interface ShellUiStatesProps {
   basePath: string;
+  loadingSkeleton: ShellModuleSkeletonKey;
   loadingDescription: string;
   errorDescription: string;
   successDescription: string;
@@ -13,6 +16,7 @@ interface ShellUiStatesProps {
 
 export function ShellUiStates({
   basePath,
+  loadingSkeleton,
   loadingDescription,
   errorDescription,
   successDescription,
@@ -24,6 +28,7 @@ export function ShellUiStates({
       <section className="shell-ui-state shell-ui-state-loading">
         <h2>Cargando</h2>
         <p aria-label="Estado: Cargando">Estado: Cargando</p>
+        <ModuleSkeleton moduleKey={loadingSkeleton} />
         <p>{loadingDescription}</p>
       </section>
 

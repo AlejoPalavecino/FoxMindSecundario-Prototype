@@ -13,6 +13,7 @@ export default function DocenteProgresoPage() {
       />
       <ShellUiStates
         basePath="/docente/progreso"
+        loadingSkeleton="docente-progreso"
         loadingDescription="Cargando métricas de avance por aula."
         errorDescription="No pudimos recuperar los indicadores de progreso."
         successDescription="Indicadores de progreso listos para análisis docente."

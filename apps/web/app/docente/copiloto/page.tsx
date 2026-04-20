@@ -13,6 +13,7 @@ export default function DocenteCopilotoPage() {
       />
       <ShellUiStates
         basePath="/docente/copiloto"
+        loadingSkeleton="docente-copiloto"
         loadingDescription="Cargando asistencias y sugerencias del copiloto."
         errorDescription="No pudimos conectar con el Copiloto IA."
         successDescription="Copiloto IA operativo para acompañar la planificación."

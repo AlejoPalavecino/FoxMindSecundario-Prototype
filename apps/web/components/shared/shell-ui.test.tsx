@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { EmptyState } from "./empty-state";
 import { DataTable } from "./data-table";
+import { ModuleSkeleton } from "./module-skeleton";
 import { PageHeader } from "./page-header";
 import { ShellUiStates } from "./shell-ui-states";
 import { StatCard } from "./stat-card";
@@ -54,6 +55,7 @@ describe("shared shell ui", () => {
     const html = renderToStaticMarkup(
       <ShellUiStates
         basePath="/docente"
+        loadingSkeleton="docente-dashboard"
         loadingDescription="Cargando datos"
         errorDescription="No pudimos recuperar la información"
         successDescription="Todo listo"
@@ -62,9 +64,19 @@ describe("shared shell ui", () => {
     );
 
     expect(html).toContain("Estado: Cargando");
+    expect(html).toContain("aria-label=\"Skeleton dashboard docente\"");
     expect(html).toContain("Estado: Error");
     expect(html).toContain("Estado: Operativo");
     expect(html).toContain("Sin contenido disponible");
+  });
+
+  it("renders module skeleton variants with stable contract", () => {
+    const html = renderToStaticMarkup(<ModuleSkeleton moduleKey="alumno-estudia" />);
+
+    expect(html).toContain("aria-label=\"Skeleton EstudIA alumno\"");
+    expect(html).toContain("skeleton-block");
+    expect(html).toContain("skeleton-block-title");
+    expect(html).toContain("skeleton-block-row");
   });
 
   it("renders stat card with value and helper description", () => {

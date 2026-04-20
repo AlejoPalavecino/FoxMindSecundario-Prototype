@@ -13,6 +13,7 @@ export default function DocenteConfiguracionPage() {
       />
       <ShellUiStates
         basePath="/docente/configuracion"
+        loadingSkeleton="docente-configuracion"
         loadingDescription="Cargando preferencias y parámetros docentes."
         errorDescription="No pudimos cargar la configuración docente."
         successDescription="Configuración disponible para personalizar tu entorno docente."

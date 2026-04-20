@@ -13,6 +13,7 @@ export default function AlumnoConfiguracionPage() {
       />
       <ShellUiStates
         basePath="/alumno/configuracion"
+        loadingSkeleton="alumno-configuracion"
         loadingDescription="Cargando tus preferencias de cuenta."
         errorDescription="No pudimos abrir la configuración del alumno."
         successDescription="Configuración disponible para personalizar tu experiencia."

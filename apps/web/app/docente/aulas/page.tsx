@@ -13,6 +13,7 @@ export default function DocenteAulasPage() {
       />
       <ShellUiStates
         basePath="/docente/aulas"
+        loadingSkeleton="docente-aulas"
         loadingDescription="Cargando aulas y cursos asignados."
         errorDescription="No pudimos obtener la lista de aulas docentes."
         successDescription="Aulas sincronizadas y listas para operar."

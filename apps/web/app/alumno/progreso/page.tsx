@@ -13,6 +13,7 @@ export default function AlumnoProgresoPage() {
       />
       <ShellUiStates
         basePath="/alumno/progreso"
+        loadingSkeleton="alumno-progreso"
         loadingDescription="Cargando métricas de avance individual."
         errorDescription="No pudimos actualizar tu progreso."
         successDescription="Tus métricas están disponibles para seguimiento continuo."
