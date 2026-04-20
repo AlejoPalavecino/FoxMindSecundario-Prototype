@@ -12,10 +12,12 @@
     "dev:api": "npm run dev --workspace @foxmind/api",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "test:e2e": "npm run test:e2e --workspace @foxmind/api"
+    "test:e2e": "npm run test:e2e --workspace @foxmind/api",
+    "test:smoke:web:sprint1": "node scripts/sprint1-browser-smoke.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "playwright": "^1.55.0",
     "typescript": "^5.8.3",
     "vitest": "^3.1.1"
   }
