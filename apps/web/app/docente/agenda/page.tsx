@@ -1,7 +1,7 @@
 import React from "react";
-import { EmptyState } from "../../../components/shared/empty-state";
 import { PageHeader } from "../../../components/shared/page-header";
 import { StatusBadge } from "../../../components/shared/status-badge";
+import { ShellUiStates } from "../../../components/shared/shell-ui-states";
 
 export default function DocenteAgendaPage() {
   return (
@@ -11,10 +11,12 @@ export default function DocenteAgendaPage() {
         subtitle="Visualizá clases, eventos y recordatorios clave del ciclo lectivo."
         actions={<StatusBadge status="warning" />}
       />
-      <EmptyState
-        title="Sin contenido disponible"
-        description="La vista de Agenda quedó preparada para incorporar calendario y planificación docente."
-        action={{ href: "/docente/agenda", label: "Actualizar agenda" }}
+      <ShellUiStates
+        basePath="/docente/agenda"
+        loadingDescription="Cargando agenda de clases y eventos."
+        errorDescription="No pudimos actualizar la agenda docente."
+        successDescription="Agenda disponible para gestionar el calendario académico."
+        emptyDescription="La vista de Agenda quedó preparada para incorporar calendario y planificación docente."
       />
     </section>
   );

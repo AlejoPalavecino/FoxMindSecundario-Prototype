@@ -19,6 +19,17 @@ describe("role layout shell", () => {
     expect(html).not.toContain("Próximamente");
   });
 
+  it("renders alumno navigation with all required section routes enabled", () => {
+    const html = renderToStaticMarkup(<RoleSidebarNav role="ALUMNO" currentPath="/alumno" />);
+
+    expect(html).toContain("href=\"/alumno\"");
+    expect(html).toContain("href=\"/alumno/aulas\"");
+    expect(html).toContain("href=\"/alumno/estudia\"");
+    expect(html).toContain("href=\"/alumno/progreso\"");
+    expect(html).toContain("href=\"/alumno/configuracion\"");
+    expect(html).not.toContain("Próximamente");
+  });
+
   it("renders role layout shell with provided content", () => {
     const html = renderToStaticMarkup(
       <RoleLayoutShell role="ALUMNO" currentPath="/alumno">

@@ -30,7 +30,7 @@ describe("role-navigation", () => {
     expect(keys).toEqual(["dashboard", "aulas", "estudia", "mi-progreso", "configuracion"]);
   });
 
-  it("keeps all docente sections enabled and alumno shell limited to dashboard", () => {
+  it("keeps all docente and alumno sections enabled", () => {
     const docente = getRoleNavigation("DOCENTE");
     const alumno = getRoleNavigation("ALUMNO");
 
@@ -42,7 +42,13 @@ describe("role-navigation", () => {
       "/docente/copiloto",
       "/docente/configuracion"
     ]);
-    expect(alumno.items.filter((item) => item.enabled).map((item) => item.href)).toEqual(["/alumno"]);
+    expect(alumno.items.filter((item) => item.enabled).map((item) => item.href)).toEqual([
+      "/alumno",
+      "/alumno/aulas",
+      "/alumno/estudia",
+      "/alumno/progreso",
+      "/alumno/configuracion"
+    ]);
   });
 
   it("returns role shell metadata and default path by role", () => {

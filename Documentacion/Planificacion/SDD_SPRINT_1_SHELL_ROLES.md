@@ -43,8 +43,8 @@ Escenarios clave:
 ### Must
 - [x] `TASK-001` Implementar rutas y layouts por rol.
 - [x] `TASK-002` Crear todas las vistas shell requeridas para Docente.
-- [ ] `TASK-003` Crear todas las vistas shell requeridas para Alumno.
-- [ ] `TASK-004` Implementar estados `empty/loading/error/success` en todas las vistas.
+- [x] `TASK-003` Crear todas las vistas shell requeridas para Alumno.
+- [x] `TASK-004` Implementar estados `empty/loading/error/success` en todas las vistas.
 - [ ] `TASK-005` Crear biblioteca minima de componentes compartidos.
 - [ ] `TASK-006` Validar responsive base desktop/mobile.
 
@@ -59,7 +59,7 @@ Escenarios clave:
 - Batch 1 (completado): layouts por rol Docente/Alumno, config tipada unica de navegacion y base de biblioteca compartida (`PageHeader`, `EmptyState`, `StatusBadge`) integrada en shells actuales.
 - Nota TASK-005: en Batch 1 se completo SOLO la base inicial de componentes compartidos; la task sigue abierta hasta cerrar biblioteca minima completa en batches siguientes.
 - Batch 2 (completado): se crearon shells Docente para Dashboard, Aulas, Agenda, Progreso, Copiloto IA y Configuracion; se habilitaron estas rutas en la navegacion docente tipada y se cubrieron tests de render/navegacion para evitar secciones rotas.
-- Batch 3: pantallas shell alumno + estados UI.
+- Batch 3 (completado): se crearon shells Alumno para Dashboard, Aulas, EstudIA, Mi Progreso y Configuracion; se habilitaron todas las rutas Alumno en la navegacion tipada y se aplico un patron reutilizable de estados UI (`loading/error/success/empty`) en todas las vistas shell Docente+Alumno con cobertura de tests de contrato.
 - Batch 4: polish responsive + accesibilidad base.
 
 ## 7) Verify
