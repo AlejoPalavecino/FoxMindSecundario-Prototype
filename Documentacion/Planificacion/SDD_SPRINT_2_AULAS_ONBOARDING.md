@@ -39,6 +39,43 @@ Escenarios:
   - Docente: lista aulas + modal crear/editar + tabla alumnos.
   - Alumno: cards de aulas asignadas.
 
+### Contrato CSV MVP (acuerdo Batch 0)
+- Objetivo: alta masiva simple y segura para enrollment por aula.
+- Formato: `text/csv`, UTF-8, separador coma `,`, primera fila header obligatoria.
+- Columnas obligatorias: `email`, `fullName`.
+- Columnas opcionales: ninguna para MVP.
+- Maximo por archivo: `200` filas de datos.
+- Reglas por fila:
+  - `email` valido y normalizado a minuscula.
+  - `fullName` no vacio (1..120 chars).
+  - Si alumno no existe en tenant, crear `User` rol `ALUMNO`.
+  - Si ya existe enrollment en esa aula, no duplicar y reportar como `duplicado`.
+- Respuesta API esperada:
+  - `processed`: filas procesadas.
+  - `createdUsers`: alumnos creados.
+  - `createdEnrollments`: enrollments creados.
+  - `errors`: lista por fila con `line`, `code`, `message`.
+
+### Matriz de permisos (acuerdo Batch 0)
+| Endpoint | DOCENTE | ALUMNO |
+|---|---|---|
+| `POST /classrooms` | permitido | denegado |
+| `PATCH /classrooms/:id` | permitido (solo tenant propio) | denegado |
+| `POST /classrooms/:id/enrollments` | permitido (solo tenant propio) | denegado |
+| `POST /classrooms/:id/enrollments/csv` | permitido (solo tenant propio) | denegado |
+| `GET /student/classrooms` | denegado | permitido (solo propias) |
+
+### Logging minimo obligatorio (acuerdo Batch 0)
+- Eventos a registrar:
+  - `classroom.created`
+  - `classroom.updated`
+  - `enrollment.created`
+  - `enrollment.csv.imported`
+  - `enrollment.csv.rejected`
+  - `auth.guard.role.rejected` (si aplica en flujo)
+- Campos minimos: `event`, `tenantId`, `actorUserId`, `role`, `resourceId`, `timestamp`.
+- Errores CSV deben incluir `line` y `code` en metadata.
+
 ## 5) Tasks
 ### Must
 - [ ] `TASK-001` Modelo y migraciones de Classroom/Enrollment.
@@ -56,6 +93,7 @@ Escenarios:
 - [ ] `TASK-009` Export rapido de listado de aula.
 
 ## 6) Apply
+- Batch 0 (completado): acuerdos operativos cerrados (contrato CSV, matriz permisos, logging minimo y evidencia de verify).
 - Batch 1: DB + API core.
 - Batch 2: UI docente (aulas + enrollment manual).
 - Batch 3: CSV + UI alumno + pruebas.
@@ -65,6 +103,12 @@ Escenarios:
   - Flujo E2E completo: crear aula -> enrolar -> alumno visualiza.
   - Validaciones CSV (archivo invalido, filas duplicadas, formato incorrecto).
   - Permisos (alumno no puede administrar aula).
+- Checklist de evidencia (acuerdo Batch 0):
+  - Captura/video de Docente creando aula.
+  - Captura/video de alta manual de alumno en aula.
+  - Captura/video de import CSV con al menos un error por fila.
+  - Captura/video de Alumno visualizando aula asignada.
+  - Prueba negativa de permiso: request de ALUMNO a endpoint de admin responde `403`.
 - Decision: pendiente.
 
 ## 8) Archive
@@ -72,6 +116,10 @@ Escenarios:
 
 ## DoR
 - [x] Spec y Design listos
+- [x] Contrato CSV MVP definido
+- [x] Matriz de permisos acordada
+- [x] Logging minimo acordado
+- [x] Evidencia de Verify definida
 
 ## DoD
 - [ ] Must cerradas
