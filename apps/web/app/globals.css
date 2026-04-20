@@ -413,6 +413,113 @@ select:focus-visible {
   border-top: 1px solid var(--color-fox-border);
 }
 
+.docente-aulas-state {
+  border: 1px solid var(--color-fox-border);
+  border-radius: 16px;
+  background: var(--color-fox-surface);
+  padding: 16px;
+}
+
+.docente-aulas-state h2 {
+  margin: 0;
+  font-family: var(--font-heading), Montserrat, sans-serif;
+  font-size: 18px;
+}
+
+.docente-aulas-state p {
+  margin: 8px 0 0;
+}
+
+.docente-aulas-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.docente-aulas-card {
+  border: 1px solid var(--color-fox-border);
+  border-radius: 16px;
+  background: var(--color-fox-surface);
+  padding: 16px;
+}
+
+.docente-aulas-card h2 {
+  margin: 0;
+  font-family: var(--font-heading), Montserrat, sans-serif;
+  font-size: 18px;
+}
+
+.docente-aulas-form {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.docente-aulas-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.docente-aulas-form input,
+.docente-aulas-selector-label select {
+  border: 1px solid var(--color-fox-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--color-fox-text-main);
+  background: var(--color-fox-bg);
+}
+
+.docente-aulas-form button {
+  justify-self: flex-start;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-fox-primary);
+  cursor: pointer;
+}
+
+.docente-aulas-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.docente-aulas-selector-label {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.docente-aulas-caption {
+  margin: 0;
+  color: var(--color-fox-text-muted);
+}
+
+.docente-aulas-feedback {
+  margin: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.docente-aulas-feedback-success {
+  color: #0f3f2f;
+  background: color-mix(in srgb, var(--color-fox-green) 26%, #fff 74%);
+}
+
+.docente-aulas-feedback-warning {
+  color: #5d430e;
+  background: color-mix(in srgb, var(--color-fox-yellow) 35%, #fff 65%);
+}
+
+.docente-aulas-feedback-danger {
+  color: #6b201a;
+  background: color-mix(in srgb, var(--color-fox-red) 24%, #fff 76%);
+}
+
 .module-skeleton {
   display: grid;
   gap: 8px;

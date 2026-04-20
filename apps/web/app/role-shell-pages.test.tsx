@@ -58,7 +58,12 @@ describe("role shell pages", () => {
     const html = renderToStaticMarkup(<DocenteAulasPage />);
 
     expect(html).toContain("Aulas");
-    expectStatesContract(html, "aulas docente");
+    expect(html).toContain("Crear aula");
+    expect(html).toContain("Editar aula");
+    expect(html).toContain("Alta manual de alumno");
+    expect(html).toContain("Seleccioná o creá un aula antes de registrar alumnos.");
+    expect(html).toContain("Listado de aulas docente");
+    expect(html).toContain("Estado: Cargando");
   });
 
   it("renders docente agenda shell page with shared components", () => {

@@ -80,8 +80,8 @@ Escenarios:
 ### Must
 - [x] `TASK-001` Modelo y migraciones de Classroom/Enrollment.
 - [x] `TASK-002` Endpoints de aula y enrollment con permisos por rol.
-- [ ] `TASK-003` UI Docente para crear/editar aula.
-- [ ] `TASK-004` UI Docente para alta manual de alumno.
+- [x] `TASK-003` UI Docente para crear/editar aula.
+- [x] `TASK-004` UI Docente para alta manual de alumno.
 - [ ] `TASK-005` Import CSV MVP con reporte de errores.
 - [ ] `TASK-006` UI Alumno para visualizar aulas asignadas.
 - [ ] `TASK-007` Tests integration de enrollment y permisos. (parcial: base API de enrollment/permisos cubierta en Batch 1)
@@ -101,6 +101,11 @@ Escenarios:
     - Logging minimo aplicado para `classroom.created`, `classroom.updated`, `enrollment.created` y `auth.guard.role.rejected` con metadata minima (`event`, `tenantId`, `actorUserId`, `role`, `resourceId`, `timestamp`).
     - `TASK-007` avance parcial: base de tests de integracion para permisos (403 ALUMNO) y enrollment (positivo DOCENTE + duplicado consistente) implementada para core API de este batch.
 - Batch 2: UI docente (aulas + enrollment manual).
+  - Resultado Batch 2:
+    - `TASK-003` completada: vista `Docente / Aulas` implementada con listado, formularios de crear/editar y estados `loading/error/empty/success` alineados al shell.
+    - `TASK-004` completada: alta manual de alumno por `studentId` integrada contra `POST /classrooms/:id/enrollments` con feedback de exito, error y manejo de duplicado idempotente (`created: false`).
+    - Integracion cliente API agregada para `GET/POST/PATCH /classrooms` y `POST /classrooms/:id/enrollments` con fallback MVP cuando listado no esta disponible.
+    - Cobertura de tests UI y contrato agregada para formularios, estados y caso duplicado de enrollment.
 - Batch 3: CSV + UI alumno + pruebas.
 
 ## 7) Verify
