@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { createClassroom, createEnrollment, fetchTeacherClassrooms, resolveEnrollmentNotice, updateClassroom } from "../../lib/classrooms-api";
+import {
+  createClassroom,
+  createEnrollment,
+  fetchTeacherClassrooms,
+  importEnrollmentsCsv,
+  resolveEnrollmentNotice,
+  type CsvImportError,
+  type ImportEnrollmentsCsvResponse,
+  updateClassroom
+} from "../../lib/classrooms-api";
 import { DataTable } from "../shared/data-table";
 import { EmptyState } from "../shared/empty-state";
 import { PageHeader } from "../shared/page-header";
@@ -30,6 +39,11 @@ type EnrollmentFormFields = {
   studentId: string;
 };
 
+type CsvFormFields = {
+  fileName: string;
+  csvContent: string;
+};
+
 export type DocenteAulasStatus = "loading" | "error" | "empty" | "success";
 
 export interface DocenteAulasUiState {
@@ -39,6 +53,8 @@ export interface DocenteAulasUiState {
   createForm: FormFields;
   editForm: FormFields;
   enrollmentForm: EnrollmentFormFields;
+  csvForm: CsvFormFields;
+  csvReport: ImportEnrollmentsCsvResponse | null;
   feedback: DocenteAulasFeedback | null;
 }
 
@@ -49,6 +65,7 @@ interface DocenteAulasWorkspaceProps {
 
 const EMPTY_FORM: FormFields = { name: "", subject: "" };
 const EMPTY_ENROLLMENT_FORM: EnrollmentFormFields = { studentId: "" };
+const EMPTY_CSV_FORM: CsvFormFields = { fileName: "", csvContent: "" };
 
 export function resolveUiState(input: {
   isLoading: boolean;
@@ -81,10 +98,15 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
   const [enrollmentForm, setEnrollmentForm] = useState<EnrollmentFormFields>(
     initialState?.enrollmentForm ?? EMPTY_ENROLLMENT_FORM
   );
+  const [csvForm, setCsvForm] = useState<CsvFormFields>(initialState?.csvForm ?? EMPTY_CSV_FORM);
+  const [csvReport, setCsvReport] = useState<ImportEnrollmentsCsvResponse | null>(
+    initialState?.csvReport ?? null
+  );
   const [feedback, setFeedback] = useState<DocenteAulasFeedback | null>(initialState?.feedback ?? null);
   const [isSubmittingCreate, setIsSubmittingCreate] = useState(false);
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
   const [isSubmittingEnrollment, setIsSubmittingEnrollment] = useState(false);
+  const [isSubmittingCsv, setIsSubmittingCsv] = useState(false);
 
   const selectedClassroom = useMemo(
     () => classrooms.find((classroom) => classroom.id === selectedClassroomId) ?? null,
@@ -155,6 +177,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
   const canSubmitEdit =
     !!selectedClassroom && editForm.name.trim().length > 0 && editForm.subject.trim().length > 0;
   const canSubmitEnrollment = !!selectedClassroom && enrollmentForm.studentId.trim().length > 0;
+  const canSubmitCsv = !!selectedClassroom && csvForm.csvContent.trim().length > 0;
 
   async function handleCreateSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -261,6 +284,50 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
     } finally {
       setIsSubmittingEnrollment(false);
     }
+  }
+
+  async function handleCsvSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedClassroom || !canSubmitCsv) {
+      return;
+    }
+
+    setIsSubmittingCsv(true);
+    setFeedback(null);
+    try {
+      const report = await importEnrollmentsCsv(selectedClassroom.id, {
+        csvContent: csvForm.csvContent
+      });
+      setCsvReport(report);
+      setFeedback({
+        tone: report.errors.length > 0 ? "warning" : "success",
+        message:
+          report.errors.length > 0
+            ? "Importación finalizada con observaciones."
+            : "Importación CSV completada sin errores."
+      });
+      setCsvForm((previous) => ({ ...previous, csvContent: "" }));
+    } catch (error) {
+      setFeedback({
+        tone: "danger",
+        message: error instanceof Error ? error.message : "No se pudo importar el CSV."
+      });
+    } finally {
+      setIsSubmittingCsv(false);
+    }
+  }
+
+  async function handleCsvFileSelection(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const csvContent = await file.text();
+    setCsvForm({
+      fileName: file.name,
+      csvContent
+    });
   }
 
   function handleClassroomSelection(classroomId: string) {
@@ -394,6 +461,61 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
           ) : (
             <p>Seleccioná o creá un aula antes de registrar alumnos.</p>
           )}
+        </article>
+
+        <article className="docente-aulas-card" aria-label="Formulario importación CSV">
+          <h2>Importar CSV</h2>
+          {selectedClassroom ? (
+            <form className="docente-aulas-form" onSubmit={handleCsvSubmit}>
+              <p className="docente-aulas-caption">
+                Aula activa: <strong>{selectedClassroom.name}</strong>
+              </p>
+              <label>
+                Archivo CSV
+                <input type="file" accept=".csv,text/csv" onChange={handleCsvFileSelection} />
+              </label>
+              <label>
+                Contenido CSV
+                <textarea
+                  name="csv-content"
+                  value={csvForm.csvContent}
+                  onChange={(event) =>
+                    setCsvForm((previous) => ({
+                      ...previous,
+                      csvContent: event.target.value
+                    }))
+                  }
+                  placeholder="email,fullName"
+                  rows={5}
+                />
+              </label>
+              {csvForm.fileName ? <p>Archivo seleccionado: {csvForm.fileName}</p> : null}
+              <button type="submit" disabled={isSubmittingCsv || !canSubmitCsv}>
+                {isSubmittingCsv ? "Importando..." : "Importar CSV"}
+              </button>
+            </form>
+          ) : (
+            <p>Seleccioná o creá un aula antes de importar alumnos por CSV.</p>
+          )}
+
+          {csvReport ? (
+            <section aria-label="Reporte de importación CSV" className="docente-aulas-csv-report">
+              <p>Filas procesadas: {csvReport.processed}</p>
+              <p>Usuarios creados: {csvReport.createdUsers}</p>
+              <p>Enrollments creados: {csvReport.createdEnrollments}</p>
+              {csvReport.errors.length > 0 ? (
+                <ul>
+                  {csvReport.errors.map((error: CsvImportError) => (
+                    <li key={`${error.line}-${error.code}`}>
+                      Línea {error.line} - {error.code}: {error.message}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Sin errores por fila.</p>
+              )}
+            </section>
+          ) : null}
         </article>
       </section>
 

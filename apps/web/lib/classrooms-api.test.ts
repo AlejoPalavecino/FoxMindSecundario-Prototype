@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createClassroom,
   createEnrollment,
+  fetchStudentClassrooms,
   fetchTeacherClassrooms,
+  importEnrollmentsCsv,
   resolveEnrollmentNotice,
   updateClassroom
 } from "./classrooms-api";
@@ -79,5 +81,57 @@ describe("classrooms api", () => {
 
     expect(result.created).toBe(false);
     expect(resolveEnrollmentNotice(result)).toMatchObject({ tone: "warning" });
+  });
+
+  it("imports enrollments csv and returns row-level errors", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        processed: 2,
+        createdUsers: 1,
+        createdEnrollments: 1,
+        errors: [{ line: 3, code: "DUPLICATE_ENROLLMENT", message: "duplicado" }]
+      })
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await importEnrollmentsCsv("class-1", {
+      csvContent: "email,fullName\nstudent@foxmind.app,Alumno Uno"
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:3001/api/classrooms/class-1/enrollments/csv",
+      expect.objectContaining({
+        method: "POST"
+      })
+    );
+    expect(result.errors).toEqual([
+      {
+        line: 3,
+        code: "DUPLICATE_ENROLLMENT",
+        message: "duplicado"
+      }
+    ]);
+  });
+
+  it("fetches classrooms assigned to student", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [{ id: "class-1", name: "2A", subject: "Matemática", enrollmentId: "enr-1" }]
+      })
+    );
+
+    const classrooms = await fetchStudentClassrooms();
+
+    expect(classrooms).toEqual([
+      {
+        id: "class-1",
+        name: "2A",
+        subject: "Matemática",
+        enrollmentId: "enr-1"
+      }
+    ]);
   });
 });

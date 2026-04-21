@@ -82,9 +82,9 @@ Escenarios:
 - [x] `TASK-002` Endpoints de aula y enrollment con permisos por rol.
 - [x] `TASK-003` UI Docente para crear/editar aula.
 - [x] `TASK-004` UI Docente para alta manual de alumno.
-- [ ] `TASK-005` Import CSV MVP con reporte de errores.
-- [ ] `TASK-006` UI Alumno para visualizar aulas asignadas.
-- [ ] `TASK-007` Tests integration de enrollment y permisos. (parcial: base API de enrollment/permisos cubierta en Batch 1)
+- [x] `TASK-005` Import CSV MVP con reporte de errores.
+- [x] `TASK-006` UI Alumno para visualizar aulas asignadas.
+- [x] `TASK-007` Tests integration de enrollment y permisos.
 
 ### Should
 - [ ] `TASK-008` Busqueda/filtro en listado de alumnos de aula.
@@ -107,6 +107,11 @@ Escenarios:
     - Integracion cliente API agregada para `GET/POST/PATCH /classrooms` y `POST /classrooms/:id/enrollments` con fallback MVP cuando listado no esta disponible.
     - Cobertura de tests UI y contrato agregada para formularios, estados y caso duplicado de enrollment.
 - Batch 3: CSV + UI alumno + pruebas.
+  - Resultado Batch 3:
+    - `TASK-005` completada: endpoint `POST /classrooms/:id/enrollments/csv` implementado con parsing CSV MVP (`email,fullName`), tope de `200` filas, normalización de email, validación por fila y respuesta con `processed`, `createdUsers`, `createdEnrollments`, `errors[{line,code,message}]`.
+    - Logging mínimo aplicado para import masivo: `enrollment.csv.imported` (resumen de import) y `enrollment.csv.rejected` (errores por fila o rechazo de archivo) con metadata obligatoria y `line`/`code`.
+    - `TASK-006` completada: endpoint `GET /student/classrooms` habilitado para `ALUMNO` y UI Alumno conectada a endpoint real para listar aulas asignadas con estados `loading/error/empty/success` consistentes.
+    - `TASK-007` completada: tests de integración/API cubren CSV válido, CSV inválido, duplicados y permisos (`403` para ALUMNO en endpoints admin y `403` para DOCENTE en endpoint alumno); tests Web cubren render de aulas asignadas y feedback/reportes de import CSV.
 
 ## 7) Verify
 - Evidencia requerida:
@@ -132,5 +137,5 @@ Escenarios:
 - [x] Evidencia de Verify definida
 
 ## DoD
-- [ ] Must cerradas
+- [x] Must cerradas
 - [ ] Verify sin critical

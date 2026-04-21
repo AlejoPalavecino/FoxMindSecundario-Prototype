@@ -11,6 +11,7 @@ const DOCENTE_USER: JwtPayload = {
 };
 
 const STUDENT_ID = "student-1";
+const STUDENT_EMAIL = "Student1@FoxMind.app";
 
 const DUPLICATE_ENROLLMENT_ERROR = Object.assign(new Error("Duplicate enrollment"), {
   code: "P2002"
@@ -29,11 +30,13 @@ describe("ClassroomsService integration", () => {
       findFirst: vi.fn()
     },
     user: {
-      findFirst: vi.fn()
+      findFirst: vi.fn(),
+      create: vi.fn()
     },
     enrollment: {
       create: vi.fn(),
-      findUnique: vi.fn()
+      findUnique: vi.fn(),
+      findMany: vi.fn()
     }
   };
 
@@ -177,5 +180,155 @@ describe("ClassroomsService integration", () => {
     await expect(
       service.createEnrollment("classroom-1", { studentId: STUDENT_ID }, DOCENTE_USER)
     ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it("imports csv enrollment rows and reports duplicate rows as errors", async () => {
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      tenantId: DOCENTE_USER.tenantId
+    });
+    prisma.user.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        id: STUDENT_ID,
+        tenantId: DOCENTE_USER.tenantId,
+        email: "student1@foxmind.app",
+        role: "ALUMNO"
+      });
+    prisma.user.create.mockResolvedValue({
+      id: STUDENT_ID,
+      tenantId: DOCENTE_USER.tenantId,
+      email: "student1@foxmind.app",
+      role: "ALUMNO"
+    });
+    prisma.enrollment.create
+      .mockResolvedValueOnce({
+        id: "enrollment-1",
+        classroomId: "classroom-1",
+        studentId: STUDENT_ID
+      })
+      .mockRejectedValueOnce(DUPLICATE_ENROLLMENT_ERROR);
+
+    const result = await service.importEnrollmentsFromCsv(
+      "classroom-1",
+      {
+        csvContent: `email,fullName\n${STUDENT_EMAIL},Alumno Uno\n${STUDENT_EMAIL},Alumno Uno`
+      },
+      DOCENTE_USER
+    );
+
+    expect(result).toEqual({
+      processed: 2,
+      createdUsers: 1,
+      createdEnrollments: 1,
+      errors: [
+        {
+          line: 3,
+          code: "DUPLICATE_ENROLLMENT",
+          message: "El alumno ya estaba enrolado en esta aula"
+        }
+      ]
+    });
+    expect(classroomLogger.info).toHaveBeenCalledWith(
+      "enrollment.csv.imported",
+      expect.objectContaining({
+        tenantId: DOCENTE_USER.tenantId,
+        actorUserId: DOCENTE_USER.sub,
+        role: DOCENTE_USER.role,
+        resourceId: "classroom-1"
+      })
+    );
+    expect(classroomLogger.warn).toHaveBeenCalledWith(
+      "enrollment.csv.rejected",
+      expect.objectContaining({
+        tenantId: DOCENTE_USER.tenantId,
+        actorUserId: DOCENTE_USER.sub,
+        role: DOCENTE_USER.role,
+        resourceId: "classroom-1",
+        line: 3,
+        code: "DUPLICATE_ENROLLMENT"
+      })
+    );
+  });
+
+  it("rejects csv import when header is invalid", async () => {
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      tenantId: DOCENTE_USER.tenantId
+    });
+
+    const result = await service.importEnrollmentsFromCsv(
+      "classroom-1",
+      {
+        csvContent: "studentEmail,fullName\nstudent1@foxmind.app,Alumno Uno"
+      },
+      DOCENTE_USER
+    );
+
+    expect(result.processed).toBe(0);
+    expect(result.createdUsers).toBe(0);
+    expect(result.createdEnrollments).toBe(0);
+    expect(result.errors).toEqual([
+      {
+        line: 1,
+        code: "INVALID_HEADER",
+        message: "El CSV debe incluir el header exacto: email,fullName"
+      }
+    ]);
+    expect(classroomLogger.warn).toHaveBeenCalledWith(
+      "enrollment.csv.rejected",
+      expect.objectContaining({
+        line: 1,
+        code: "INVALID_HEADER"
+      })
+    );
+  });
+
+  it("returns only assigned classrooms for ALUMNO", async () => {
+    prisma.enrollment.findMany.mockResolvedValue([
+      {
+        id: "enrollment-1",
+        classroom: {
+          id: "classroom-1",
+          name: "2A",
+          subject: "Matemática"
+        }
+      }
+    ]);
+
+    const result = await service.getStudentClassrooms({
+      sub: "student-1",
+      email: "alumno@foxmind.app",
+      role: "ALUMNO",
+      tenantId: "tenant-1"
+    });
+
+    expect(result).toEqual([
+      {
+        id: "classroom-1",
+        name: "2A",
+        subject: "Matemática",
+        enrollmentId: "enrollment-1"
+      }
+    ]);
+    expect(prisma.enrollment.findMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: "tenant-1",
+        studentId: "student-1"
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
+      select: {
+        id: true,
+        classroom: {
+          select: {
+            id: true,
+            name: true,
+            subject: true
+          }
+        }
+      }
+    });
   });
 });
