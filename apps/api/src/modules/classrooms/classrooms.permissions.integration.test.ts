@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import type { JwtPayload } from "../auth/interfaces/jwt-payload.interface";
 import { ClassroomsController } from "./classrooms.controller";
+import { SubmissionsController } from "./submissions.controller";
 import { StudentClassroomsController } from "./student-classrooms.controller";
 
 type MockExecutionContextInput = {
@@ -179,5 +180,95 @@ describe("Classrooms permissions integration", () => {
     const allowed = guard.canActivate(context);
 
     expect(allowed).toBe(true);
+  });
+
+  it("allows ALUMNO to submit activity", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: alumnoUser,
+      method: "POST",
+      url: "/api/activities/activity-1/submissions",
+      handler: SubmissionsController.prototype.submitActivity,
+      controllerClass: SubmissionsController
+    });
+
+    const allowed = guard.canActivate(context);
+
+    expect(allowed).toBe(true);
+  });
+
+  it("rejects DOCENTE with 403 when submitting as alumno", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: docenteUser,
+      method: "POST",
+      url: "/api/activities/activity-1/submissions",
+      handler: SubmissionsController.prototype.submitActivity,
+      controllerClass: SubmissionsController
+    });
+
+    let thrownError: unknown;
+    try {
+      guard.canActivate(context);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(ForbiddenException);
+    expect((thrownError as ForbiddenException).getStatus()).toBe(403);
+    expect(authLogger.warn).toHaveBeenCalledWith(
+      "auth.guard.role.rejected",
+      expect.objectContaining({
+        tenantId: docenteUser.tenantId,
+        actorUserId: docenteUser.sub,
+        role: docenteUser.role,
+        resourceId: "/api/activities/activity-1/submissions"
+      })
+    );
+  });
+
+  it("allows DOCENTE to grade submission", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: docenteUser,
+      method: "PATCH",
+      url: "/api/submissions/submission-1/grade",
+      handler: SubmissionsController.prototype.gradeSubmission,
+      controllerClass: SubmissionsController
+    });
+
+    const allowed = guard.canActivate(context);
+
+    expect(allowed).toBe(true);
+  });
+
+  it("rejects ALUMNO with 403 when grading submission", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: alumnoUser,
+      method: "PATCH",
+      url: "/api/submissions/submission-1/grade",
+      handler: SubmissionsController.prototype.gradeSubmission,
+      controllerClass: SubmissionsController
+    });
+
+    let thrownError: unknown;
+    try {
+      guard.canActivate(context);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(ForbiddenException);
+    expect((thrownError as ForbiddenException).getStatus()).toBe(403);
+    expect(authLogger.warn).toHaveBeenCalledWith(
+      "auth.guard.role.rejected",
+      expect.objectContaining({
+        tenantId: alumnoUser.tenantId,
+        actorUserId: alumnoUser.sub,
+        role: alumnoUser.role,
+        resourceId: "/api/submissions/submission-1/grade"
+      })
+    );
   });
 });

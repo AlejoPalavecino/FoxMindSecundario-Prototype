@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { JwtPayload } from "../auth/interfaces/jwt-payload.interface";
 import { ClassroomsService } from "./classrooms.service";
@@ -39,7 +39,13 @@ describe("ClassroomsService integration", () => {
     },
     activity: {
       create: vi.fn(),
+      findFirst: vi.fn(),
       findMany: vi.fn()
+    },
+    submission: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn()
     },
     user: {
       findFirst: vi.fn(),
@@ -529,5 +535,252 @@ describe("ClassroomsService integration", () => {
       NotFoundException
     );
     expect(prisma.activity.findMany).not.toHaveBeenCalled();
+  });
+
+  it("creates submission for ALUMNO assigned to classroom", async () => {
+    prisma.activity.findFirst.mockResolvedValue({
+      id: "activity-1",
+      classroomId: "classroom-1",
+      tenantId: ALUMNO_USER.tenantId
+    });
+    prisma.enrollment.findFirst.mockResolvedValue({
+      id: "enrollment-1",
+      classroomId: "classroom-1",
+      studentId: ALUMNO_USER.sub,
+      tenantId: ALUMNO_USER.tenantId
+    });
+    prisma.submission.create.mockResolvedValue({
+      id: "submission-1",
+      activityId: "activity-1",
+      studentId: ALUMNO_USER.sub,
+      content: "Respuesta final de la actividad",
+      status: "SUBMITTED",
+      createdAt: new Date("2026-05-12T11:00:00.000Z")
+    });
+
+    const result = await service.submitActivity(
+      "activity-1",
+      { content: "Respuesta final de la actividad" },
+      ALUMNO_USER
+    );
+
+    expect(result).toEqual({
+      id: "submission-1",
+      activityId: "activity-1",
+      studentId: ALUMNO_USER.sub,
+      content: "Respuesta final de la actividad",
+      status: "submitted",
+      createdAt: new Date("2026-05-12T11:00:00.000Z")
+    });
+    expect(prisma.submission.create).toHaveBeenCalledWith({
+      data: {
+        tenantId: ALUMNO_USER.tenantId,
+        activityId: "activity-1",
+        studentId: ALUMNO_USER.sub,
+        content: "Respuesta final de la actividad",
+        status: "SUBMITTED"
+      }
+    });
+    expect(classroomLogger.info).toHaveBeenCalledWith(
+      "submission.created",
+      expect.objectContaining({
+        tenantId: ALUMNO_USER.tenantId,
+        actorUserId: ALUMNO_USER.sub,
+        role: ALUMNO_USER.role,
+        resourceId: "submission-1"
+      })
+    );
+  });
+
+  it("rejects submission when ALUMNO is not enrolled in activity classroom", async () => {
+    prisma.activity.findFirst.mockResolvedValue({
+      id: "activity-1",
+      classroomId: "classroom-1",
+      tenantId: ALUMNO_USER.tenantId
+    });
+    prisma.enrollment.findFirst.mockResolvedValue(null);
+
+    await expect(
+      service.submitActivity("activity-1", { content: "Respuesta final de la actividad" }, ALUMNO_USER)
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.submission.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects submission when content is empty or shorter than minimum", async () => {
+    prisma.activity.findFirst.mockResolvedValue({
+      id: "activity-1",
+      classroomId: "classroom-1",
+      tenantId: ALUMNO_USER.tenantId
+    });
+    prisma.enrollment.findFirst.mockResolvedValue({
+      id: "enrollment-1",
+      classroomId: "classroom-1",
+      studentId: ALUMNO_USER.sub,
+      tenantId: ALUMNO_USER.tenantId
+    });
+
+    await expect(service.submitActivity("activity-1", { content: "        " }, ALUMNO_USER)).rejects.toBeInstanceOf(
+      BadRequestException
+    );
+    await expect(service.submitActivity("activity-1", { content: "corto" }, ALUMNO_USER)).rejects.toBeInstanceOf(
+      BadRequestException
+    );
+    expect(prisma.submission.create).not.toHaveBeenCalled();
+  });
+
+  it("grades submission for DOCENTE that owns classroom", async () => {
+    prisma.submission.findFirst.mockResolvedValue({
+      id: "submission-1",
+      tenantId: DOCENTE_USER.tenantId,
+      status: "SUBMITTED",
+      activity: {
+        classroomId: "classroom-1"
+      }
+    });
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      tenantId: DOCENTE_USER.tenantId,
+      teacherId: DOCENTE_USER.sub
+    });
+    prisma.submission.update.mockResolvedValue({
+      id: "submission-1",
+      activityId: "activity-1",
+      studentId: ALUMNO_USER.sub,
+      content: "Respuesta final de la actividad",
+      status: "GRADED",
+      score: 8,
+      feedback: "Buen trabajo, faltó justificar el último paso.",
+      gradedAt: new Date("2026-05-12T12:00:00.000Z"),
+      gradedByUserId: DOCENTE_USER.sub
+    });
+
+    const result = await service.gradeSubmission(
+      "submission-1",
+      {
+        score: 8,
+        feedback: "Buen trabajo, faltó justificar el último paso."
+      },
+      DOCENTE_USER
+    );
+
+    expect(result).toEqual({
+      id: "submission-1",
+      activityId: "activity-1",
+      studentId: ALUMNO_USER.sub,
+      content: "Respuesta final de la actividad",
+      status: "graded",
+      score: 8,
+      feedback: "Buen trabajo, faltó justificar el último paso.",
+      gradedAt: new Date("2026-05-12T12:00:00.000Z"),
+      gradedByUserId: DOCENTE_USER.sub
+    });
+    expect(prisma.submission.update).toHaveBeenCalledWith({
+      where: { id: "submission-1" },
+      data: expect.objectContaining({
+        status: "GRADED",
+        score: 8,
+        feedback: "Buen trabajo, faltó justificar el último paso.",
+        gradedByUserId: DOCENTE_USER.sub
+      })
+    });
+    expect(classroomLogger.info).toHaveBeenCalledWith(
+      "submission.graded",
+      expect.objectContaining({
+        tenantId: DOCENTE_USER.tenantId,
+        actorUserId: DOCENTE_USER.sub,
+        role: DOCENTE_USER.role,
+        resourceId: "submission-1"
+      })
+    );
+  });
+
+  it("rejects grading when DOCENTE does not own classroom", async () => {
+    prisma.submission.findFirst.mockResolvedValue({
+      id: "submission-1",
+      tenantId: DOCENTE_USER.tenantId,
+      status: "SUBMITTED",
+      activity: {
+        classroomId: "classroom-1"
+      }
+    });
+    prisma.classroom.findFirst.mockResolvedValue(null);
+
+    await expect(
+      service.gradeSubmission(
+        "submission-1",
+        {
+          score: 8,
+          feedback: "Buen trabajo general"
+        },
+        DOCENTE_USER
+      )
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.submission.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects grading when score or feedback is invalid", async () => {
+    prisma.submission.findFirst.mockResolvedValue({
+      id: "submission-1",
+      tenantId: DOCENTE_USER.tenantId,
+      status: "SUBMITTED",
+      activity: {
+        classroomId: "classroom-1"
+      }
+    });
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      tenantId: DOCENTE_USER.tenantId,
+      teacherId: DOCENTE_USER.sub
+    });
+
+    await expect(
+      service.gradeSubmission(
+        "submission-1",
+        {
+          score: 0,
+          feedback: "Feedback correcto"
+        },
+        DOCENTE_USER
+      )
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      service.gradeSubmission(
+        "submission-1",
+        {
+          score: 7,
+          feedback: "   "
+        },
+        DOCENTE_USER
+      )
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.submission.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects grading when submission was already graded", async () => {
+    prisma.submission.findFirst.mockResolvedValue({
+      id: "submission-1",
+      tenantId: DOCENTE_USER.tenantId,
+      status: "GRADED",
+      activity: {
+        classroomId: "classroom-1"
+      }
+    });
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      tenantId: DOCENTE_USER.tenantId,
+      teacherId: DOCENTE_USER.sub
+    });
+
+    await expect(
+      service.gradeSubmission(
+        "submission-1",
+        {
+          score: 9,
+          feedback: "Seguí así"
+        },
+        DOCENTE_USER
+      )
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(prisma.submission.update).not.toHaveBeenCalled();
   });
 });

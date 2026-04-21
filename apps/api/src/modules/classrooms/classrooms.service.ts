@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { PrismaService } from "../prisma/prisma.service";
 import type { JwtPayload } from "../auth/interfaces/jwt-payload.interface";
@@ -8,6 +8,8 @@ import { UpdateClassroomDto } from "./dto/update-classroom.dto";
 import { CreateEnrollmentDto } from "./dto/create-enrollment.dto";
 import { ImportEnrollmentsCsvDto } from "./dto/import-enrollments-csv.dto";
 import { CreateClassroomActivityDto } from "./dto/create-classroom-activity.dto";
+import { CreateSubmissionDto } from "./dto/create-submission.dto";
+import { GradeSubmissionDto } from "./dto/grade-submission.dto";
 
 type EnrollmentResult = {
   created: boolean;
@@ -60,6 +62,9 @@ type ClassroomActivity = {
 const CSV_HEADER = "email,fullName";
 const MAX_CSV_ROWS = 200;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SUBMISSION_CONTENT_MIN_LENGTH = 10;
+const GRADE_FEEDBACK_MIN_LENGTH = 5;
+const GRADE_FEEDBACK_MAX_LENGTH = 1000;
 
 @Injectable()
 export class ClassroomsService {
@@ -393,6 +398,73 @@ export class ClassroomsService {
     }));
   }
 
+  async submitActivity(activityId: string, dto: CreateSubmissionDto, actor: JwtPayload) {
+    const activity = await this.ensureStudentCanSubmitActivity(activityId, actor);
+    const content = this.validateSubmissionContent(dto.content);
+
+    try {
+      const submission = await this.prisma.submission.create({
+        data: {
+          tenantId: actor.tenantId,
+          activityId: activity.id,
+          studentId: actor.sub,
+          content,
+          status: "SUBMITTED"
+        }
+      });
+
+      this.classroomsLogger.info("submission.created", this.buildLogMetadata(actor, submission.id));
+
+      return {
+        id: submission.id,
+        activityId: submission.activityId,
+        studentId: submission.studentId,
+        content: submission.content,
+        status: "submitted",
+        createdAt: submission.createdAt
+      };
+    } catch (error) {
+      if (this.isDuplicateEnrollmentError(error)) {
+        throw new ConflictException("Ya existe una entrega para esta actividad");
+      }
+
+      throw error;
+    }
+  }
+
+  async gradeSubmission(submissionId: string, dto: GradeSubmissionDto, actor: JwtPayload) {
+    const submission = await this.ensureTeacherCanGradeSubmission(submissionId, actor);
+    const { score, feedback } = this.validateGradeInput(dto.score, dto.feedback);
+    const gradedAt = new Date();
+
+    const gradedSubmission = await this.prisma.submission.update({
+      where: {
+        id: submission.id
+      },
+      data: {
+        status: "GRADED",
+        score,
+        feedback,
+        gradedAt,
+        gradedByUserId: actor.sub
+      }
+    });
+
+    this.classroomsLogger.info("submission.graded", this.buildLogMetadata(actor, gradedSubmission.id));
+
+    return {
+      id: gradedSubmission.id,
+      activityId: gradedSubmission.activityId,
+      studentId: gradedSubmission.studentId,
+      content: gradedSubmission.content,
+      status: "graded",
+      score: gradedSubmission.score,
+      feedback: gradedSubmission.feedback,
+      gradedAt: gradedSubmission.gradedAt,
+      gradedByUserId: gradedSubmission.gradedByUserId
+    };
+  }
+
   private async ensureClassroomBelongsToTenant(classroomId: string, tenantId: string) {
     const classroom = await this.prisma.classroom.findFirst({
       where: {
@@ -461,6 +533,102 @@ export class ClassroomsService {
     }
 
     throw new NotFoundException("Aula no encontrada");
+  }
+
+  private async ensureStudentCanSubmitActivity(activityId: string, actor: JwtPayload) {
+    const activity = await this.prisma.activity.findFirst({
+      where: {
+        id: activityId,
+        tenantId: actor.tenantId
+      },
+      select: {
+        id: true,
+        classroomId: true
+      }
+    });
+
+    if (!activity) {
+      throw new NotFoundException("Actividad no encontrada");
+    }
+
+    const enrollment = await this.prisma.enrollment.findFirst({
+      where: {
+        tenantId: actor.tenantId,
+        classroomId: activity.classroomId,
+        studentId: actor.sub
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!enrollment) {
+      throw new NotFoundException("Actividad no encontrada");
+    }
+
+    return activity;
+  }
+
+  private async ensureTeacherCanGradeSubmission(submissionId: string, actor: JwtPayload) {
+    const submission = await this.prisma.submission.findFirst({
+      where: {
+        id: submissionId,
+        tenantId: actor.tenantId
+      },
+      select: {
+        id: true,
+        status: true,
+        activity: {
+          select: {
+            classroomId: true
+          }
+        }
+      }
+    });
+
+    if (!submission) {
+      throw new NotFoundException("Entrega no encontrada");
+    }
+
+    await this.ensureTeacherOwnsClassroom(submission.activity.classroomId, actor);
+
+    if (submission.status !== "SUBMITTED") {
+      throw new ConflictException("La entrega ya fue corregida");
+    }
+
+    return submission;
+  }
+
+  private validateSubmissionContent(content: string) {
+    const sanitized = content.trim();
+    if (sanitized.length < SUBMISSION_CONTENT_MIN_LENGTH) {
+      throw new BadRequestException(
+        `El contenido de la entrega debe tener al menos ${SUBMISSION_CONTENT_MIN_LENGTH} caracteres`
+      );
+    }
+
+    return sanitized;
+  }
+
+  private validateGradeInput(score: number, feedback: string) {
+    if (!Number.isInteger(score) || score < 1 || score > 10) {
+      throw new BadRequestException("La nota debe ser un entero entre 1 y 10");
+    }
+
+    const sanitizedFeedback = feedback.trim();
+    if (
+      sanitizedFeedback.length < GRADE_FEEDBACK_MIN_LENGTH ||
+      sanitizedFeedback.length > GRADE_FEEDBACK_MAX_LENGTH
+    ) {
+      throw new BadRequestException(
+        `La devolución debe tener entre ${GRADE_FEEDBACK_MIN_LENGTH} y ${GRADE_FEEDBACK_MAX_LENGTH} caracteres`
+      );
+    }
+
+    return {
+      score,
+      feedback: sanitizedFeedback
+    };
   }
 
   private buildLogMetadata(actor: JwtPayload, resourceId: string) {
