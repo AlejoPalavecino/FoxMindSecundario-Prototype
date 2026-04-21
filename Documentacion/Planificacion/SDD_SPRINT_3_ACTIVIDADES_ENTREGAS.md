@@ -3,7 +3,7 @@
 ## 0) Metadata del Sprint
 - `sprint_id`: `sprint-3-actividades-entregas`
 - `periodo`: `2026-05-11 -> 2026-05-17`
-- `estado`: `approved_with_observations`
+- `estado`: `aprobado`
 - `scope_mvp`: `Docente + Alumno`
 
 ## 1) Explore
@@ -150,18 +150,24 @@ Checklist de evidencia (acuerdo Batch 0):
 - Resultado de verificación:
   - `npm run lint` ✅
   - `npm run test` ✅
+  - `npm run test:smoke:web:sprint3` ✅
   - API: 30 tests en verde.
   - Web: 57 tests en verde.
   - Shared: sin tests (passWithNoTests).
+  - Evidencia visual browser smoke:
+    - `Documentacion/Evidencias/Sprint-3/01-docente-crea-actividad.png`
+    - `Documentacion/Evidencias/Sprint-3/02-alumno-entrega-actividad.png`
+    - `Documentacion/Evidencias/Sprint-3/03-docente-corrige-entrega.png`
+    - `Documentacion/Evidencias/Sprint-3/04-alumno-visualiza-feedback.png`
 - Cumplimiento de escenarios del sprint:
   - Given actividad publicada, when alumno abre aula, then la ve como pendiente -> `COMPLIANT`.
   - Given entrega creada, when docente corrige, then cambia estado y nota -> `COMPLIANT`.
   - Given correccion lista, when alumno revisa, then ve feedback asociado -> `COMPLIANT`.
 - Hallazgos:
   - `CRITICAL`: ninguno.
-  - `WARNING`: no existe todavía smoke/E2E browser cross-role automatizado ni evidencia visual/capturas del flujo docente -> alumno; el cierre queda sustentado por tests de integración de servicio/permisos y tests de contrato/render Web.
-  - `SUGGESTION`: agregar suite `test:e2e` específica de Sprint 3 y cobertura reportable por archivo para endurecer evidencia de regressions.
-- Decision: `Aprobado con observaciones`.
+  - `WARNING`: ninguno.
+  - `SUGGESTION`: agregar coverage reportable por archivo para endurecer evidencia de regresiones.
+- Decision: `Aprobado`.
 
 ## 8) Archive
 - Resumen:
