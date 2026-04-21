@@ -81,14 +81,14 @@ Escenarios:
 
 ## 5) Tasks
 ### Must
-- [ ] `TASK-001` Modelo y migraciones de actividades/entregas.
-- [ ] `TASK-002` Endpoints de creacion/publicacion actividad.
+- [x] `TASK-001` Modelo y migraciones de actividades/entregas.
+- [x] `TASK-002` Endpoints de creacion/publicacion actividad.
 - [ ] `TASK-003` Endpoints de entrega y correccion.
 - [ ] `TASK-004` UI Docente para crear actividad.
 - [ ] `TASK-005` UI Alumno para entregar actividad.
 - [ ] `TASK-006` UI Docente para calificar y dar feedback.
 - [ ] `TASK-007` UI Alumno para ver resultado.
-- [ ] `TASK-008` Tests integration de estados y permisos.
+- [ ] `TASK-008` Tests integration de estados y permisos. (avance parcial Batch 1: permisos y visibilidad de actividades)
 
 ### Should
 - [ ] `TASK-009` Reentrega controlada (si docente habilita).
@@ -98,7 +98,11 @@ Escenarios:
 
 ## 6) Apply
 - Batch 0 (completado): acuerdos operativos cerrados (estados, contrato de entrega/calificacion, matriz de permisos, logging minimo y evidencia de verify).
-- Batch 1: DB + API de actividades.
+- Batch 1 (completado):
+  - DB/Prisma: agregadas entidades `Activity` y `Submission` con enums de estado y campos de calificacion MVP (`score`, `feedback`, `gradedAt`, `gradedByUserId`), relaciones con `Tenant`, `Classroom`, `User` y migracion incremental limpia.
+  - API Nest: implementados `POST /classrooms/:id/activities` y `GET /classrooms/:id/activities` con permisos por rol/membresia (`DOCENTE` aula propia, `ALUMNO` aula asignada).
+  - Logging: agregado evento `activity.created`; rechazos de rol quedan cubiertos por `auth.guard.role.rejected` del guard global.
+  - Tests integration (`TASK-008` parcial): caso positivo de creacion por docente, caso negativo alumno creando (`403`), listado visible por rol (docente aula propia, alumno solo asignado).
 - Batch 2: entrega + correccion API.
 - Batch 3: UIs docente/alumno.
 - Batch 4: tests + ajustes.

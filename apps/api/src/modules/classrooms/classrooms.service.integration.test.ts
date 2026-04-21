@@ -10,6 +10,13 @@ const DOCENTE_USER: JwtPayload = {
   tenantId: "tenant-1"
 };
 
+const ALUMNO_USER: JwtPayload = {
+  sub: "student-1",
+  email: "alumno@foxmind.app",
+  role: "ALUMNO",
+  tenantId: "tenant-1"
+};
+
 const STUDENT_ID = "student-1";
 const STUDENT_EMAIL = "Student1@FoxMind.app";
 
@@ -30,6 +37,10 @@ describe("ClassroomsService integration", () => {
       findFirst: vi.fn(),
       findMany: vi.fn()
     },
+    activity: {
+      create: vi.fn(),
+      findMany: vi.fn()
+    },
     user: {
       findFirst: vi.fn(),
       create: vi.fn()
@@ -37,6 +48,7 @@ describe("ClassroomsService integration", () => {
     enrollment: {
       create: vi.fn(),
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
       findMany: vi.fn()
     }
   };
@@ -396,5 +408,126 @@ describe("ClassroomsService integration", () => {
         }
       }
     });
+  });
+
+  it("creates published activity for classroom teacher", async () => {
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      tenantId: DOCENTE_USER.tenantId,
+      teacherId: DOCENTE_USER.sub
+    });
+    prisma.activity.create.mockResolvedValue({
+      id: "activity-1",
+      title: "TP 1",
+      description: "Resolver ejercicios 1 al 5",
+      status: "published"
+    });
+
+    const result = await service.createClassroomActivity(
+      "classroom-1",
+      {
+        title: "TP 1",
+        description: "Resolver ejercicios 1 al 5"
+      },
+      DOCENTE_USER
+    );
+
+    expect(result).toEqual({
+      id: "activity-1",
+      title: "TP 1",
+      description: "Resolver ejercicios 1 al 5",
+      status: "published"
+    });
+    expect(prisma.activity.create).toHaveBeenCalledWith({
+      data: {
+        tenantId: DOCENTE_USER.tenantId,
+        classroomId: "classroom-1",
+        creatorUserId: DOCENTE_USER.sub,
+        title: "TP 1",
+        description: "Resolver ejercicios 1 al 5",
+        status: "PUBLISHED"
+      }
+    });
+    expect(classroomLogger.info).toHaveBeenCalledWith(
+      "activity.created",
+      expect.objectContaining({
+        tenantId: DOCENTE_USER.tenantId,
+        actorUserId: DOCENTE_USER.sub,
+        role: DOCENTE_USER.role,
+        resourceId: "activity-1"
+      })
+    );
+  });
+
+  it("lists activities for DOCENTE in own classroom", async () => {
+    prisma.classroom.findFirst.mockResolvedValue({
+      id: "classroom-1",
+      teacherId: DOCENTE_USER.sub,
+      tenantId: DOCENTE_USER.tenantId
+    });
+    prisma.activity.findMany.mockResolvedValue([
+      {
+        id: "activity-1",
+        classroomId: "classroom-1",
+        title: "TP 1",
+        description: "Resolver ejercicios 1 al 5",
+        status: "published",
+        createdAt: new Date("2026-05-12T10:00:00.000Z")
+      }
+    ]);
+
+    const result = await service.getClassroomActivities("classroom-1", DOCENTE_USER);
+
+    expect(result).toHaveLength(1);
+    expect(prisma.activity.findMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: DOCENTE_USER.tenantId,
+        classroomId: "classroom-1"
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+  });
+
+  it("lists activities for ALUMNO only when assigned to classroom", async () => {
+    prisma.enrollment.findFirst.mockResolvedValue({
+      id: "enrollment-1",
+      classroomId: "classroom-1",
+      studentId: ALUMNO_USER.sub,
+      tenantId: ALUMNO_USER.tenantId
+    });
+    prisma.activity.findMany.mockResolvedValue([
+      {
+        id: "activity-1",
+        classroomId: "classroom-1",
+        title: "TP 1",
+        description: "Resolver ejercicios 1 al 5",
+        status: "published",
+        createdAt: new Date("2026-05-12T10:00:00.000Z")
+      }
+    ]);
+
+    const result = await service.getClassroomActivities("classroom-1", ALUMNO_USER);
+
+    expect(result).toHaveLength(1);
+    expect(prisma.activity.findMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: ALUMNO_USER.tenantId,
+        classroomId: "classroom-1"
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+  });
+
+  it("rejects activity list for ALUMNO not assigned to classroom", async () => {
+    prisma.enrollment.findFirst.mockResolvedValue(null);
+
+    await expect(service.getClassroomActivities("classroom-1", ALUMNO_USER)).rejects.toBeInstanceOf(
+      NotFoundException
+    );
+    expect(prisma.activity.findMany).not.toHaveBeenCalled();
   });
 });
