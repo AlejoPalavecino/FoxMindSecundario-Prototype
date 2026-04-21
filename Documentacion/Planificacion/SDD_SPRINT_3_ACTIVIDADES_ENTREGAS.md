@@ -38,6 +38,47 @@ Escenarios:
   - Docente: listado de actividades + panel de correccion.
   - Alumno: listado de tareas + workspace de entrega.
 
+### Contrato de estados MVP (acuerdo Batch 0)
+- `Activity.status`: `published`.
+- `Submission.status`:
+  - `submitted`: alumno entrego y espera revision.
+  - `graded`: docente corrigio y califico.
+- Transiciones permitidas:
+  - actividad creada (`published`) -> alumno entrega (`submitted`) -> docente corrige (`graded`).
+- Reglas:
+  - no se puede calificar una entrega inexistente.
+  - no se puede marcar `graded` sin `score` y `feedback`.
+
+### Contrato de entrega MVP (acuerdo Batch 0)
+- Formato MVP: entrega por `content` (texto) obligatoria.
+- Adjuntos:
+  - Sprint 3 base: sin adjuntos multiples.
+  - `TASK-010` cubre adjuntos multiples como `Could`.
+- Validaciones:
+  - `content` requerido, largo minimo 10 chars.
+  - rechazo de entrega vacia o whitespace-only.
+
+### Contrato de calificacion MVP (acuerdo Batch 0)
+- `score`: entero en rango `1..10`.
+- `feedback`: obligatorio, `5..1000` chars.
+- `gradedAt` se setea al corregir.
+
+### Matriz de permisos (acuerdo Batch 0)
+| Endpoint | DOCENTE | ALUMNO |
+|---|---|---|
+| `POST /classrooms/:id/activities` | permitido (aulas propias) | denegado |
+| `GET /classrooms/:id/activities` | permitido (aulas propias) | permitido (aulas asignadas) |
+| `POST /activities/:id/submissions` | denegado | permitido (si aula asignada) |
+| `PATCH /submissions/:id/grade` | permitido (si aula propia) | denegado |
+
+### Logging minimo obligatorio (acuerdo Batch 0)
+- Eventos:
+  - `activity.created`
+  - `submission.created`
+  - `submission.graded`
+  - `auth.guard.role.rejected`
+- Campos minimos: `event`, `tenantId`, `actorUserId`, `role`, `resourceId`, `timestamp`.
+
 ## 5) Tasks
 ### Must
 - [ ] `TASK-001` Modelo y migraciones de actividades/entregas.
@@ -56,6 +97,7 @@ Escenarios:
 - [ ] `TASK-010` Adjuntos multiples por entrega.
 
 ## 6) Apply
+- Batch 0 (completado): acuerdos operativos cerrados (estados, contrato de entrega/calificacion, matriz de permisos, logging minimo y evidencia de verify).
 - Batch 1: DB + API de actividades.
 - Batch 2: entrega + correccion API.
 - Batch 3: UIs docente/alumno.
@@ -66,9 +108,25 @@ Escenarios:
 - Seguridad: ownership de entrega + permisos por rol.
 - Calidad: casos borde (sin entrega, entrega vacia, calificacion invalida).
 
+Checklist de evidencia (acuerdo Batch 0):
+- Captura/video Docente creando actividad.
+- Captura/video Alumno viendo actividad pendiente y entregando.
+- Captura/video Docente corrigiendo y calificando.
+- Captura/video Alumno visualizando nota + devolucion.
+- Prueba negativa: ALUMNO no puede corregir (`403`).
+- Prueba negativa: DOCENTE no puede entregar como alumno (`403`).
+
 ## 8) Archive
 - Resumen, deuda, hand-off a Sprint 4.
 
 ## DoD
 - [ ] Must cerradas
 - [ ] Verify sin critical
+
+## DoR
+- [x] Spec y Design listos
+- [x] Contrato de estados definido
+- [x] Contrato de entrega/calificacion definido
+- [x] Matriz de permisos acordada
+- [x] Logging minimo acordado
+- [x] Evidencia de Verify definida
