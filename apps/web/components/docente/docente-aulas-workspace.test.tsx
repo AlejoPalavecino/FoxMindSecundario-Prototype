@@ -23,7 +23,7 @@ describe("docente aulas workspace", () => {
   it("renders create, edit and enrollment forms in success mode", () => {
     const html = renderWorkspace({
       uiState: "success",
-      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", studentIds: [] }],
+      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", students: [] }],
       selectedClassroomId: "class-1",
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
@@ -44,7 +44,14 @@ describe("docente aulas workspace", () => {
   it("renders warning feedback for duplicate enrollment response", () => {
     const html = renderWorkspace({
       uiState: "success",
-      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", studentIds: ["student-1"] }],
+      classrooms: [
+        {
+          id: "class-1",
+          name: "2A",
+          subject: "Matemática",
+          students: [{ studentId: "student-1", email: "", fullName: "", status: "active" }]
+        }
+      ],
       selectedClassroomId: "class-1",
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
@@ -65,7 +72,7 @@ describe("docente aulas workspace", () => {
   it("renders csv import report with row-level errors", () => {
     const html = renderWorkspace({
       uiState: "success",
-      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", studentIds: [] }],
+      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", students: [] }],
       selectedClassroomId: "class-1",
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
@@ -105,7 +112,10 @@ describe("docente aulas workspace", () => {
           id: "class-1",
           name: "2A",
           subject: "Matemática",
-          studentIds: ["student-001", "student-xyz"]
+          students: [
+            { studentId: "student-001", email: "a@foxmind.app", fullName: "Alumno A", status: "active" },
+            { studentId: "student-xyz", email: "b@foxmind.app", fullName: "Alumno B", status: "active" }
+          ]
         }
       ],
       selectedClassroomId: "class-1",
@@ -132,7 +142,10 @@ describe("docente aulas workspace", () => {
           id: "class-1",
           name: "2A",
           subject: "Matemática",
-          studentIds: ["student-001", "student-xyz"]
+          students: [
+            { studentId: "student-001", email: "a@foxmind.app", fullName: "Alumno A", status: "active" },
+            { studentId: "student-xyz", email: "b@foxmind.app", fullName: "Alumno B", status: "active" }
+          ]
         }
       ],
       selectedClassroomId: "class-1",

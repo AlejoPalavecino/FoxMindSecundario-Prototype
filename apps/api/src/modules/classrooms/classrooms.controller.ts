@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { Roles } from "../auth/decorators/roles.decorator";
 import type { JwtPayload } from "../auth/interfaces/jwt-payload.interface";
 import { ClassroomsService } from "./classrooms.service";
@@ -11,6 +11,11 @@ import { ImportEnrollmentsCsvDto } from "./dto/import-enrollments-csv.dto";
 @Roles("DOCENTE")
 export class ClassroomsController {
   constructor(private readonly classroomsService: ClassroomsService) {}
+
+  @Get()
+  getTeacherClassrooms(@Req() request: { user: JwtPayload }) {
+    return this.classroomsService.getTeacherClassrooms(request.user);
+  }
 
   @Post()
   createClassroom(@Body() dto: CreateClassroomDto, @Req() request: { user: JwtPayload }) {

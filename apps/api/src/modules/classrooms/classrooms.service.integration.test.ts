@@ -27,7 +27,8 @@ describe("ClassroomsService integration", () => {
     classroom: {
       create: vi.fn(),
       updateMany: vi.fn(),
-      findFirst: vi.fn()
+      findFirst: vi.fn(),
+      findMany: vi.fn()
     },
     user: {
       findFirst: vi.fn(),
@@ -326,6 +327,71 @@ describe("ClassroomsService integration", () => {
             id: true,
             name: true,
             subject: true
+          }
+        }
+      }
+    });
+  });
+
+  it("returns teacher classrooms with enrolled students roster", async () => {
+    prisma.classroom.findMany.mockResolvedValue([
+      {
+        id: "classroom-1",
+        name: "2A",
+        subject: "Matemática",
+        enrollments: [
+          {
+            student: {
+              id: "student-1",
+              email: "alumno1@foxmind.app",
+              fullName: "Alumno Uno"
+            }
+          }
+        ]
+      }
+    ]);
+
+    const result = await service.getTeacherClassrooms(DOCENTE_USER);
+
+    expect(result).toEqual([
+      {
+        id: "classroom-1",
+        name: "2A",
+        subject: "Matemática",
+        students: [
+          {
+            studentId: "student-1",
+            email: "alumno1@foxmind.app",
+            fullName: "Alumno Uno",
+            status: "active"
+          }
+        ]
+      }
+    ]);
+    expect(prisma.classroom.findMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: DOCENTE_USER.tenantId,
+        teacherId: DOCENTE_USER.sub
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
+      select: {
+        id: true,
+        name: true,
+        subject: true,
+        enrollments: {
+          orderBy: {
+            createdAt: "asc"
+          },
+          select: {
+            student: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true
+              }
+            }
           }
         }
       }

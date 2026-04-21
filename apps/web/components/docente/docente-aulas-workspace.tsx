@@ -29,7 +29,7 @@ export interface DocenteClassroomRow {
   id: string;
   name: string;
   subject: string;
-  studentIds: string[];
+  students: ClassroomRosterRow[];
 }
 
 type FormFields = {
@@ -134,7 +134,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
           return;
         }
 
-        const nextClassrooms = fetched.map((classroom) => ({ ...classroom, studentIds: [] }));
+        const nextClassrooms = fetched;
         const first = nextClassrooms[0] ?? null;
 
         setClassrooms(nextClassrooms);
@@ -174,7 +174,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
     id: classroom.id,
     aula: classroom.name,
     materia: classroom.subject,
-    alumnos: classroom.studentIds.length
+    alumnos: classroom.students.length
   }));
 
   const canSubmitCreate = createForm.name.trim().length > 0 && createForm.subject.trim().length > 0;
@@ -188,12 +188,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
       return [];
     }
 
-    return selectedClassroom.studentIds.map((studentId) => ({
-      studentId,
-      email: "",
-      fullName: "",
-      status: ""
-    }));
+    return selectedClassroom.students;
   }, [selectedClassroom]);
 
   const filteredRosterRows = useMemo(
@@ -218,7 +213,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
         name: createForm.name.trim(),
         subject: createForm.subject.trim()
       });
-      const nextClassroom: DocenteClassroomRow = { ...created, studentIds: [] };
+      const nextClassroom: DocenteClassroomRow = { ...created, students: [] };
 
       setClassrooms((previous) => [...previous, nextClassroom]);
       setSelectedClassroomId(nextClassroom.id);
@@ -289,16 +284,24 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
             return item;
           }
 
-          const exists = item.studentIds.includes(normalizedStudentId);
-          if (exists) {
-            return item;
-          }
+           const exists = item.students.some((student) => student.studentId === normalizedStudentId);
+           if (exists) {
+             return item;
+           }
 
-          return {
-            ...item,
-            studentIds: [...item.studentIds, normalizedStudentId]
-          };
-        })
+           return {
+             ...item,
+             students: [
+               ...item.students,
+               {
+                 studentId: normalizedStudentId,
+                 email: "",
+                 fullName: "",
+                 status: "active"
+               }
+             ]
+           };
+         })
       );
       setFeedback(enrollmentNotice);
       setEnrollmentForm(EMPTY_ENROLLMENT_FORM);
