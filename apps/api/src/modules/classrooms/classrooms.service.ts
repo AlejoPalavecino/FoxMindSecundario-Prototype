@@ -33,6 +33,20 @@ type StudentClassroom = {
   enrollmentId: string;
 };
 
+type TeacherClassroomStudent = {
+  studentId: string;
+  email: string;
+  fullName: string;
+  status: "active";
+};
+
+type TeacherClassroom = {
+  id: string;
+  name: string;
+  subject: string;
+  students: TeacherClassroomStudent[];
+};
+
 const CSV_HEADER = "email,fullName";
 const MAX_CSV_ROWS = 200;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -230,6 +244,49 @@ export class ClassroomsService {
     }
 
     return result;
+  }
+
+  async getTeacherClassrooms(actor: JwtPayload): Promise<TeacherClassroom[]> {
+    const classrooms = await this.prisma.classroom.findMany({
+      where: {
+        tenantId: actor.tenantId,
+        teacherId: actor.sub
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
+      select: {
+        id: true,
+        name: true,
+        subject: true,
+        enrollments: {
+          orderBy: {
+            createdAt: "asc"
+          },
+          select: {
+            student: {
+              select: {
+                id: true,
+                email: true,
+                fullName: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return classrooms.map((classroom) => ({
+      id: classroom.id,
+      name: classroom.name,
+      subject: classroom.subject,
+      students: classroom.enrollments.map((enrollment) => ({
+        studentId: enrollment.student.id,
+        email: enrollment.student.email,
+        fullName: enrollment.student.fullName,
+        status: "active"
+      }))
+    }));
   }
 
   async getStudentClassrooms(actor: JwtPayload): Promise<StudentClassroom[]> {

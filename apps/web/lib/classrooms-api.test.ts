@@ -16,25 +16,52 @@ describe("classrooms api", () => {
     vi.restoreAllMocks();
   });
 
-  it("falls back to empty list when classrooms listing endpoint is unavailable", async () => {
+  it("fetches teacher classrooms with roster data", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
-        ok: false,
-        status: 404,
-        json: async () => ({ message: "Not Found" })
+        ok: true,
+        json: async () => [
+          {
+            id: "class-1",
+            name: "2A",
+            subject: "Matemática",
+            students: [
+              {
+                studentId: "student-1",
+                email: "uno@foxmind.app",
+                fullName: "Alumno Uno",
+                status: "active"
+              }
+            ]
+          }
+        ]
       })
     );
 
     const classrooms = await fetchTeacherClassrooms();
 
-    expect(classrooms).toEqual([]);
+    expect(classrooms).toEqual([
+      {
+        id: "class-1",
+        name: "2A",
+        subject: "Matemática",
+        students: [
+          {
+            studentId: "student-1",
+            email: "uno@foxmind.app",
+            fullName: "Alumno Uno",
+            status: "active"
+          }
+        ]
+      }
+    ]);
   });
 
   it("creates a classroom with the expected POST contract", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ id: "class-1", name: "2A", subject: "Matemática" })
+      json: async () => ({ id: "class-1", name: "2A", subject: "Matemática", students: [] })
     });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -52,7 +79,7 @@ describe("classrooms api", () => {
   it("updates a classroom with PATCH contract", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ id: "class-1", name: "2A Actualizada", subject: "Historia" })
+      json: async () => ({ id: "class-1", name: "2A Actualizada", subject: "Historia", students: [] })
     });
     vi.stubGlobal("fetch", fetchMock);
 

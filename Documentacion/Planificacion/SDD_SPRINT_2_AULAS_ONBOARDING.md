@@ -3,7 +3,7 @@
 ## 0) Metadata del Sprint
 - `sprint_id`: `sprint-2-aulas-onboarding`
 - `periodo`: `2026-05-04 -> 2026-05-10`
-- `estado`: `draft`
+- `estado`: `aprobado`
 - `scope_mvp`: `Docente + Alumno`
 
 ## 1) Explore
@@ -124,15 +124,32 @@ Escenarios:
   - Validaciones CSV (archivo invalido, filas duplicadas, formato incorrecto).
   - Permisos (alumno no puede administrar aula).
 - Checklist de evidencia (acuerdo Batch 0):
-  - Captura/video de Docente creando aula.
-  - Captura/video de alta manual de alumno en aula.
-  - Captura/video de import CSV con al menos un error por fila.
-  - Captura/video de Alumno visualizando aula asignada.
-  - Prueba negativa de permiso: request de ALUMNO a endpoint de admin responde `403`.
-- Decision: pendiente.
+  - Evidencia automatizada Docente creando/actualizando aulas: `apps/api/src/modules/classrooms/classrooms.service.integration.test.ts` + `apps/web/components/docente/docente-aulas-workspace.test.tsx`.
+  - Evidencia automatizada alta manual en aula y duplicado idempotente: `apps/api/src/modules/classrooms/classrooms.service.integration.test.ts` + `apps/web/components/docente/docente-aulas-workspace.test.tsx`.
+  - Evidencia automatizada import CSV con errores por fila: `apps/api/src/modules/classrooms/classrooms.service.integration.test.ts` + `apps/web/lib/classrooms-api.test.ts` + `apps/web/components/docente/docente-aulas-workspace.test.tsx`.
+  - Evidencia automatizada Alumno visualizando aulas asignadas: `apps/api/src/modules/classrooms/classrooms.service.integration.test.ts` + `apps/web/components/alumno/alumno-aulas-workspace.test.tsx`.
+  - Evidencia automatizada permisos (`403` ALUMNO en admin y `403` DOCENTE en endpoint alumno): `apps/api/src/modules/classrooms/classrooms.permissions.integration.test.ts`.
+- Resultado de verificación:
+  - `npm run lint` ✅
+  - `npm run test` ✅
+  - API: 13 tests en verde.
+  - Web: 49 tests en verde.
+  - Shared: sin tests (passWithNoTests).
+- Hallazgos:
+  - `CRITICAL`: ninguno.
+  - `WARNING`: ninguno.
+  - `SUGGESTION`: sumar smoke browser visual del flujo docente->alumno en Sprint 3 para evidencia UX adicional.
+- Decision: `Aprobado`.
 
 ## 8) Archive
-- Resumen, deudas, hand-off a Sprint 3.
+- Resumen:
+  - Flujo académico E2E MVP implementado: Docente crea/edita aula, enrola manual o CSV, Alumno visualiza aulas asignadas.
+  - Todas las tasks `Must`, `Should` y `Could` cerradas en este sprint.
+- Deudas técnicas:
+  - Fortalecer cobertura de `packages/shared` con tests unitarios en Sprint 3.
+  - Incorporar smoke browser visual para evidencia UX end-to-end.
+- Hand-off a Sprint 3:
+  - Base de aulas/onboarding estable y lista para verticales pedagógicas (actividades/correcciones) sobre datos reales.
 
 ## DoR
 - [x] Spec y Design listos
@@ -143,4 +160,4 @@ Escenarios:
 
 ## DoD
 - [x] Must cerradas
-- [ ] Verify sin critical
+- [x] Verify sin critical

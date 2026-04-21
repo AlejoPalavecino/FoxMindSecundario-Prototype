@@ -2,6 +2,7 @@ export interface TeacherClassroom {
   id: string;
   name: string;
   subject: string;
+  students: ClassroomRosterRow[];
 }
 
 export interface CreateClassroomPayload {
@@ -86,7 +87,7 @@ interface RequestJsonOptions {
 }
 
 export async function fetchTeacherClassrooms(): Promise<TeacherClassroom[]> {
-  return requestJson<TeacherClassroom[]>("/classrooms", { method: "GET" }, { fallbackToEmptyOn404: true });
+  return requestJson<TeacherClassroom[]>("/classrooms", { method: "GET" });
 }
 
 export async function createClassroom(payload: CreateClassroomPayload): Promise<TeacherClassroom> {
