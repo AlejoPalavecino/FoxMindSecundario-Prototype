@@ -4,9 +4,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   createClassroom,
   createEnrollment,
+  exportClassroomRosterCsv,
   fetchTeacherClassrooms,
   importEnrollmentsCsv,
   resolveEnrollmentNotice,
+  type ClassroomRosterRow,
   type CsvImportError,
   type ImportEnrollmentsCsvResponse,
   updateClassroom
@@ -53,6 +55,7 @@ export interface DocenteAulasUiState {
   createForm: FormFields;
   editForm: FormFields;
   enrollmentForm: EnrollmentFormFields;
+  studentFilterQuery: string;
   csvForm: CsvFormFields;
   csvReport: ImportEnrollmentsCsvResponse | null;
   feedback: DocenteAulasFeedback | null;
@@ -98,6 +101,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
   const [enrollmentForm, setEnrollmentForm] = useState<EnrollmentFormFields>(
     initialState?.enrollmentForm ?? EMPTY_ENROLLMENT_FORM
   );
+  const [studentFilterQuery, setStudentFilterQuery] = useState(initialState?.studentFilterQuery ?? "");
   const [csvForm, setCsvForm] = useState<CsvFormFields>(initialState?.csvForm ?? EMPTY_CSV_FORM);
   const [csvReport, setCsvReport] = useState<ImportEnrollmentsCsvResponse | null>(
     initialState?.csvReport ?? null
@@ -178,6 +182,28 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
     !!selectedClassroom && editForm.name.trim().length > 0 && editForm.subject.trim().length > 0;
   const canSubmitEnrollment = !!selectedClassroom && enrollmentForm.studentId.trim().length > 0;
   const canSubmitCsv = !!selectedClassroom && csvForm.csvContent.trim().length > 0;
+
+  const rosterRows = useMemo<ClassroomRosterRow[]>(() => {
+    if (!selectedClassroom) {
+      return [];
+    }
+
+    return selectedClassroom.studentIds.map((studentId) => ({
+      studentId,
+      email: "",
+      fullName: "",
+      status: ""
+    }));
+  }, [selectedClassroom]);
+
+  const filteredRosterRows = useMemo(
+    () => filterClassroomRosterRows(rosterRows, studentFilterQuery),
+    [rosterRows, studentFilterQuery]
+  );
+
+  const hasActiveStudentFilter = studentFilterQuery.trim().length > 0;
+  const hasRoster = rosterRows.length > 0;
+  const hasFilterResults = filteredRosterRows.length > 0;
 
   async function handleCreateSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -332,10 +358,37 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
 
   function handleClassroomSelection(classroomId: string) {
     setSelectedClassroomId(classroomId);
+    setStudentFilterQuery("");
     const classroom = classrooms.find((item) => item.id === classroomId);
     if (classroom) {
       setEditForm({ name: classroom.name, subject: classroom.subject });
     }
+  }
+
+  function handleExportRoster() {
+    if (!selectedClassroom) {
+      return;
+    }
+
+    const exported = exportClassroomRosterCsv({
+      classroomName: `${selectedClassroom.name}-${selectedClassroom.subject}`,
+      rows: rosterRows,
+      onNoData: () => {
+        setFeedback({
+          tone: "warning",
+          message: "No hay alumnos para exportar en esta aula todavía."
+        });
+      }
+    });
+
+    if (!exported) {
+      return;
+    }
+
+    setFeedback({
+      tone: "success",
+      message: `Export CSV generado para ${selectedClassroom.name}.`
+    });
   }
 
   return (
@@ -463,6 +516,51 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
           )}
         </article>
 
+        <article className="docente-aulas-card" aria-label="Listado de alumnos del aula seleccionada">
+          <h2>Listado de alumnos</h2>
+          {selectedClassroom ? (
+            <>
+              <p className="docente-aulas-caption">
+                Aula activa: <strong>{selectedClassroom.name}</strong>
+              </p>
+              <form className="docente-aulas-form" onSubmit={(event) => event.preventDefault()}>
+                <label>
+                  Buscar por studentId
+                  <input
+                    name="student-filter-query"
+                    value={studentFilterQuery}
+                    onChange={(event) => setStudentFilterQuery(event.target.value)}
+                    placeholder="Ej: student-123"
+                  />
+                </label>
+                {hasActiveStudentFilter ? (
+                  <button type="button" onClick={() => setStudentFilterQuery("")}>
+                    Limpiar filtro
+                  </button>
+                ) : null}
+                <button type="button" onClick={handleExportRoster}>
+                  Exportar CSV
+                </button>
+              </form>
+
+              {!hasRoster ? <p>Todavía no hay alumnos registrados en esta aula.</p> : null}
+              {hasRoster && !hasFilterResults ? (
+                <p>No encontramos alumnos para "{studentFilterQuery.trim()}".</p>
+              ) : null}
+              {hasRoster && hasFilterResults ? (
+                <DataTable
+                  caption="Listado de alumnos"
+                  columns={[{ key: "studentId", header: "Student ID" }]}
+                  rows={filteredRosterRows.map((row) => ({ id: row.studentId, studentId: row.studentId }))}
+                  emptyMessage="Sin alumnos en el filtro aplicado."
+                />
+              ) : null}
+            </>
+          ) : (
+            <p>Seleccioná o creá un aula para visualizar y exportar alumnos.</p>
+          )}
+        </article>
+
         <article className="docente-aulas-card" aria-label="Formulario importación CSV">
           <h2>Importar CSV</h2>
           {selectedClassroom ? (
@@ -541,6 +639,18 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
       </section>
     </section>
   );
+}
+
+export function filterClassroomRosterRows(rows: ClassroomRosterRow[], query: string): ClassroomRosterRow[] {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (normalizedQuery.length === 0) {
+    return rows;
+  }
+
+  return rows.filter((row) => {
+    const candidate = [row.studentId, row.email ?? "", row.fullName ?? ""].join(" ").toLowerCase();
+    return candidate.includes(normalizedQuery);
+  });
 }
 
 function resolveBadge(feedback: DocenteAulasFeedback | null, uiState: DocenteAulasStatus) {

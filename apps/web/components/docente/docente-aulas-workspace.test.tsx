@@ -28,6 +28,7 @@ describe("docente aulas workspace", () => {
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
       enrollmentForm: { studentId: "" },
+      studentFilterQuery: "",
       csvForm: { fileName: "", csvContent: "" },
       csvReport: null,
       feedback: null
@@ -48,6 +49,7 @@ describe("docente aulas workspace", () => {
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
       enrollmentForm: { studentId: "student-1" },
+      studentFilterQuery: "",
       csvForm: { fileName: "", csvContent: "" },
       csvReport: null,
       feedback: {
@@ -68,6 +70,7 @@ describe("docente aulas workspace", () => {
       createForm: { name: "", subject: "" },
       editForm: { name: "2A", subject: "Matemática" },
       enrollmentForm: { studentId: "" },
+      studentFilterQuery: "",
       csvForm: { fileName: "alumnos.csv", csvContent: "email,fullName" },
       csvReport: {
         processed: 2,
@@ -92,5 +95,58 @@ describe("docente aulas workspace", () => {
     expect(html).toContain("Filas procesadas: 2");
     expect(html).toContain("Línea 3");
     expect(html).toContain("DUPLICATE_ENROLLMENT");
+  });
+
+  it("filters selected classroom students by studentId query", () => {
+    const html = renderWorkspace({
+      uiState: "success",
+      classrooms: [
+        {
+          id: "class-1",
+          name: "2A",
+          subject: "Matemática",
+          studentIds: ["student-001", "student-xyz"]
+        }
+      ],
+      selectedClassroomId: "class-1",
+      createForm: { name: "", subject: "" },
+      editForm: { name: "2A", subject: "Matemática" },
+      enrollmentForm: { studentId: "" },
+      studentFilterQuery: "xyz",
+      csvForm: { fileName: "", csvContent: "" },
+      csvReport: null,
+      feedback: null
+    });
+
+    expect(html).toContain("Listado de alumnos");
+    expect(html).toContain("student-xyz");
+    expect(html).not.toContain("student-001");
+    expect(html).toContain("Limpiar filtro");
+  });
+
+  it("shows clear empty-state feedback when student filter has no matches", () => {
+    const html = renderWorkspace({
+      uiState: "success",
+      classrooms: [
+        {
+          id: "class-1",
+          name: "2A",
+          subject: "Matemática",
+          studentIds: ["student-001", "student-xyz"]
+        }
+      ],
+      selectedClassroomId: "class-1",
+      createForm: { name: "", subject: "" },
+      editForm: { name: "2A", subject: "Matemática" },
+      enrollmentForm: { studentId: "" },
+      studentFilterQuery: "nomatch",
+      csvForm: { fileName: "", csvContent: "" },
+      csvReport: null,
+      feedback: null
+    });
+
+    expect(html).toContain("No encontramos alumnos para");
+    expect(html).toContain("nomatch");
+    expect(html).toContain("Limpiar filtro");
   });
 });

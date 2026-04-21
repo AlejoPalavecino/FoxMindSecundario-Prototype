@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  buildClassroomRosterCsv,
   createClassroom,
   createEnrollment,
+  exportClassroomRosterCsv,
   fetchStudentClassrooms,
   fetchTeacherClassrooms,
   importEnrollmentsCsv,
@@ -133,5 +135,59 @@ describe("classrooms api", () => {
         enrollmentId: "enr-1"
       }
     ]);
+  });
+
+  it("builds classroom roster csv payload with stable header order", () => {
+    const csv = buildClassroomRosterCsv([
+      { studentId: "student-1", email: "uno@foxmind.app", fullName: "Alumno Uno", status: "active" },
+      { studentId: "student-2", email: "", fullName: "", status: "" }
+    ]);
+
+    expect(csv).toBe(
+      "studentId,email,fullName,status\nstudent-1,uno@foxmind.app,Alumno Uno,active\nstudent-2,,,"
+    );
+  });
+
+  it("triggers roster csv export download action when selected classroom has students", () => {
+    const triggerDownload = vi.fn();
+    const createBlobUrl = vi.fn().mockReturnValue("blob://roster");
+    const revokeBlobUrl = vi.fn();
+
+    const exported = exportClassroomRosterCsv({
+      classroomName: "2A Matemática",
+      rows: [{ studentId: "student-1", email: "uno@foxmind.app", fullName: "Alumno Uno", status: "" }],
+      deps: {
+        createBlobUrl,
+        triggerDownload,
+        revokeBlobUrl
+      }
+    });
+
+    expect(exported).toBe(true);
+    expect(createBlobUrl).toHaveBeenCalledWith(
+      "studentId,email,fullName,status\nstudent-1,uno@foxmind.app,Alumno Uno,"
+    );
+    expect(triggerDownload).toHaveBeenCalledWith("blob://roster", "2a-matematica-alumnos.csv");
+    expect(revokeBlobUrl).toHaveBeenCalledWith("blob://roster");
+  });
+
+  it("skips roster csv export and calls no-data callback when classroom has no students", () => {
+    const triggerDownload = vi.fn();
+    const onNoData = vi.fn();
+
+    const exported = exportClassroomRosterCsv({
+      classroomName: "2A Matemática",
+      rows: [],
+      onNoData,
+      deps: {
+        createBlobUrl: vi.fn(),
+        triggerDownload,
+        revokeBlobUrl: vi.fn()
+      }
+    });
+
+    expect(exported).toBe(false);
+    expect(onNoData).toHaveBeenCalledTimes(1);
+    expect(triggerDownload).not.toHaveBeenCalled();
   });
 });
