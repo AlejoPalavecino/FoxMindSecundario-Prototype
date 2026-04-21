@@ -276,11 +276,20 @@ export class ClassroomsService {
       }
     });
 
-    return classrooms.map((classroom) => ({
+    return classrooms.map((classroom: {
+      id: string;
+      name: string;
+      subject: string;
+      enrollments: Array<{
+        student: { id: string; email: string; fullName: string };
+      }>;
+    }) => ({
       id: classroom.id,
       name: classroom.name,
       subject: classroom.subject,
-      students: classroom.enrollments.map((enrollment) => ({
+      students: classroom.enrollments.map((enrollment: {
+        student: { id: string; email: string; fullName: string };
+      }) => ({
         studentId: enrollment.student.id,
         email: enrollment.student.email,
         fullName: enrollment.student.fullName,
