@@ -41,6 +41,26 @@ describe("docente aulas workspace", () => {
     expect(html).toContain("Estado: Operativo");
   });
 
+  it("renders activity creation and grading forms for selected classroom", () => {
+    const html = renderWorkspace({
+      uiState: "success",
+      classrooms: [{ id: "class-1", name: "2A", subject: "Matemática", students: [] }],
+      selectedClassroomId: "class-1",
+      createForm: { name: "", subject: "" },
+      editForm: { name: "2A", subject: "Matemática" },
+      enrollmentForm: { studentId: "" },
+      studentFilterQuery: "",
+      csvForm: { fileName: "", csvContent: "" },
+      csvReport: null,
+      feedback: null
+    });
+
+    expect(html).toContain("Crear actividad");
+    expect(html).toContain("name=\"activity-title\"");
+    expect(html).toContain("Calificar entrega");
+    expect(html).toContain("name=\"grade-feedback\"");
+  });
+
   it("renders warning feedback for duplicate enrollment response", () => {
     const html = renderWorkspace({
       uiState: "success",

@@ -48,6 +48,42 @@ export interface StudentClassroom {
   enrollmentId: string;
 }
 
+export interface ClassroomActivity {
+  id: string;
+  classroomId: string;
+  title: string;
+  description: string;
+  status: "published";
+  createdAt: string;
+}
+
+export interface CreateClassroomActivityPayload {
+  title: string;
+  description: string;
+}
+
+export interface ActivitySubmission {
+  id: string;
+  activityId: string;
+  studentId: string;
+  content: string;
+  status: "submitted" | "graded";
+  createdAt?: string;
+  score?: number;
+  feedback?: string;
+  gradedAt?: string;
+  gradedByUserId?: string;
+}
+
+export interface CreateActivitySubmissionPayload {
+  content: string;
+}
+
+export interface GradeActivitySubmissionPayload {
+  score: number;
+  feedback: string;
+}
+
 export interface EnrollmentNotice {
   tone: "success" | "warning";
   message: string;
@@ -129,6 +165,42 @@ export async function importEnrollmentsCsv(
 
 export async function fetchStudentClassrooms(): Promise<StudentClassroom[]> {
   return requestJson<StudentClassroom[]>("/student/classrooms", { method: "GET" });
+}
+
+export async function createClassroomActivity(
+  classroomId: string,
+  payload: CreateClassroomActivityPayload
+): Promise<ClassroomActivity> {
+  return requestJson<ClassroomActivity>(`/classrooms/${classroomId}/activities`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function fetchClassroomActivities(classroomId: string): Promise<ClassroomActivity[]> {
+  return requestJson<ClassroomActivity[]>(`/classrooms/${classroomId}/activities`, {
+    method: "GET"
+  });
+}
+
+export async function createActivitySubmission(
+  activityId: string,
+  payload: CreateActivitySubmissionPayload
+): Promise<ActivitySubmission> {
+  return requestJson<ActivitySubmission>(`/activities/${activityId}/submissions`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function gradeActivitySubmission(
+  submissionId: string,
+  payload: GradeActivitySubmissionPayload
+): Promise<ActivitySubmission> {
+  return requestJson<ActivitySubmission>(`/submissions/${submissionId}/grade`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
 }
 
 export function resolveEnrollmentNotice(result: CreateEnrollmentResponse): EnrollmentNotice {
