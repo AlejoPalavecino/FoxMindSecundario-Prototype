@@ -84,11 +84,11 @@ Escenarios:
 - [x] `TASK-001` Modelo y migraciones de actividades/entregas.
 - [x] `TASK-002` Endpoints de creacion/publicacion actividad.
 - [x] `TASK-003` Endpoints de entrega y correccion.
-- [ ] `TASK-004` UI Docente para crear actividad.
-- [ ] `TASK-005` UI Alumno para entregar actividad.
-- [ ] `TASK-006` UI Docente para calificar y dar feedback.
-- [ ] `TASK-007` UI Alumno para ver resultado.
-- [ ] `TASK-008` Tests integration de estados y permisos. (avance parcial Batch 2: suma casos de entrega/correccion, ownership y validaciones; resta cerrar flujo E2E/UI en lotes siguientes)
+- [x] `TASK-004` UI Docente para crear actividad.
+- [x] `TASK-005` UI Alumno para entregar actividad.
+- [x] `TASK-006` UI Docente para calificar y dar feedback.
+- [x] `TASK-007` UI Alumno para ver resultado.
+- [ ] `TASK-008` Tests integration de estados y permisos. (avance parcial Batch 3: contratos UI/API web y transiciones `pendiente -> entregada/corregida` cubiertas; resta evidencia E2E cross-role y hardening final de verify)
 
 ### Should
 - [ ] `TASK-009` Reentrega controlada (si docente habilita).
@@ -109,8 +109,12 @@ Escenarios:
   - Correccion: solo docente owner del aula de la entrega; `score` entero `1..10`; `feedback` obligatorio `5..1000`; set de `gradedAt` y `gradedByUserId`; transicion consistente `submitted -> graded` (sin doble correccion).
   - Logging: agregados eventos `submission.created` y `submission.graded`; rechazos por rol siguen auditados por `auth.guard.role.rejected` en guard global.
   - Tests integration (`TASK-008` parcial): positivos de entrega alumno y correccion docente; negativos de ownership/rol y validaciones de `content`, `score`, `feedback`.
-- Batch 3: UIs docente/alumno.
-- Batch 4: tests + ajustes.
+- Batch 3 (completado):
+  - Frontend Docente (`TASK-004` + `TASK-006`): incorporada UI para crear actividades por aula y panel de calificación de entregas (`submissionId`, `score`, `feedback`) con validaciones mínimas y feedback de éxito/error.
+  - Frontend Alumno (`TASK-005` + `TASK-007`): incorporado workspace de actividades por aula con estados visibles (`Pendiente`, `Entregada`, `Corregida`), formulario de entrega por contenido texto (mínimo 10 chars) y visualización de nota/devolución cuando la entrega está corregida.
+  - Integración API web: extendido `apps/web/lib/classrooms-api.ts` con cliente tipado para `POST/GET /classrooms/:id/activities`, `POST /activities/:id/submissions` y `PATCH /submissions/:id/grade` reutilizando `requestJson` y contratos consistentes.
+  - Tests (`TASK-008` avance): cobertura en Web para contratos de formularios docente/alumno, contratos de cliente API de actividades/entregas/corrección y transición visual de estados incluyendo feedback de corrección visible al alumno.
+- Batch 4: verify final, pruebas E2E cross-role y cierre técnico de `TASK-008`.
 
 ## 7) Verify
 - E2E: crear actividad -> entregar -> corregir -> visualizar feedback.

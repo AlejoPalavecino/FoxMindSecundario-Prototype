@@ -2,12 +2,17 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  createClassroomActivity,
   createClassroom,
   createEnrollment,
   exportClassroomRosterCsv,
+  fetchClassroomActivities,
   fetchTeacherClassrooms,
+  gradeActivitySubmission,
   importEnrollmentsCsv,
   resolveEnrollmentNotice,
+  type ActivitySubmission,
+  type ClassroomActivity,
   type ClassroomRosterRow,
   type CsvImportError,
   type ImportEnrollmentsCsvResponse,
@@ -46,6 +51,17 @@ type CsvFormFields = {
   csvContent: string;
 };
 
+type ActivityFormFields = {
+  title: string;
+  description: string;
+};
+
+type GradeFormFields = {
+  submissionId: string;
+  score: string;
+  feedback: string;
+};
+
 export type DocenteAulasStatus = "loading" | "error" | "empty" | "success";
 
 export interface DocenteAulasUiState {
@@ -57,6 +73,10 @@ export interface DocenteAulasUiState {
   enrollmentForm: EnrollmentFormFields;
   studentFilterQuery: string;
   csvForm: CsvFormFields;
+  activityForm?: ActivityFormFields;
+  gradeForm?: GradeFormFields;
+  activitiesByClassroomId?: Record<string, ClassroomActivity[]>;
+  submissionsByActivityId?: Record<string, ActivitySubmission>;
   csvReport: ImportEnrollmentsCsvResponse | null;
   feedback: DocenteAulasFeedback | null;
 }
@@ -69,6 +89,8 @@ interface DocenteAulasWorkspaceProps {
 const EMPTY_FORM: FormFields = { name: "", subject: "" };
 const EMPTY_ENROLLMENT_FORM: EnrollmentFormFields = { studentId: "" };
 const EMPTY_CSV_FORM: CsvFormFields = { fileName: "", csvContent: "" };
+const EMPTY_ACTIVITY_FORM: ActivityFormFields = { title: "", description: "" };
+const EMPTY_GRADE_FORM: GradeFormFields = { submissionId: "", score: "", feedback: "" };
 
 export function resolveUiState(input: {
   isLoading: boolean;
@@ -103,6 +125,16 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
   );
   const [studentFilterQuery, setStudentFilterQuery] = useState(initialState?.studentFilterQuery ?? "");
   const [csvForm, setCsvForm] = useState<CsvFormFields>(initialState?.csvForm ?? EMPTY_CSV_FORM);
+  const [activityForm, setActivityForm] = useState<ActivityFormFields>(
+    initialState?.activityForm ?? EMPTY_ACTIVITY_FORM
+  );
+  const [gradeForm, setGradeForm] = useState<GradeFormFields>(initialState?.gradeForm ?? EMPTY_GRADE_FORM);
+  const [activitiesByClassroomId, setActivitiesByClassroomId] = useState<Record<string, ClassroomActivity[]>>(
+    initialState?.activitiesByClassroomId ?? {}
+  );
+  const [submissionsByActivityId, setSubmissionsByActivityId] = useState<Record<string, ActivitySubmission>>(
+    initialState?.submissionsByActivityId ?? {}
+  );
   const [csvReport, setCsvReport] = useState<ImportEnrollmentsCsvResponse | null>(
     initialState?.csvReport ?? null
   );
@@ -111,6 +143,9 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
   const [isSubmittingEnrollment, setIsSubmittingEnrollment] = useState(false);
   const [isSubmittingCsv, setIsSubmittingCsv] = useState(false);
+  const [isSubmittingActivity, setIsSubmittingActivity] = useState(false);
+  const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(false);
 
   const selectedClassroom = useMemo(
     () => classrooms.find((classroom) => classroom.id === selectedClassroomId) ?? null,
@@ -167,6 +202,47 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
     };
   }, [runInitialFetch]);
 
+  useEffect(() => {
+    if (!runInitialFetch || !selectedClassroomId) {
+      return;
+    }
+
+    let isCancelled = false;
+    const run = async () => {
+      setIsLoadingActivities(true);
+      try {
+        const activities = await fetchClassroomActivities(selectedClassroomId);
+        if (isCancelled) {
+          return;
+        }
+
+        setActivitiesByClassroomId((previous) => ({
+          ...previous,
+          [selectedClassroomId]: activities
+        }));
+      } catch (error) {
+        if (isCancelled) {
+          return;
+        }
+
+        setFeedback({
+          tone: "danger",
+          message: error instanceof Error ? error.message : "No se pudieron cargar las actividades del aula."
+        });
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingActivities(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [runInitialFetch, selectedClassroomId]);
+
   const badge = resolveBadge(feedback, uiState);
   const stateDescription = resolveStateDescription(uiState);
 
@@ -182,6 +258,14 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
     !!selectedClassroom && editForm.name.trim().length > 0 && editForm.subject.trim().length > 0;
   const canSubmitEnrollment = !!selectedClassroom && enrollmentForm.studentId.trim().length > 0;
   const canSubmitCsv = !!selectedClassroom && csvForm.csvContent.trim().length > 0;
+  const canSubmitActivity =
+    !!selectedClassroom && activityForm.title.trim().length > 0 && activityForm.description.trim().length > 0;
+  const canSubmitGrade =
+    gradeForm.submissionId.trim().length > 0 &&
+    gradeForm.feedback.trim().length >= 5 &&
+    Number.isInteger(Number(gradeForm.score)) &&
+    Number(gradeForm.score) >= 1 &&
+    Number(gradeForm.score) <= 10;
 
   const rosterRows = useMemo<ClassroomRosterRow[]>(() => {
     if (!selectedClassroom) {
@@ -199,6 +283,7 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
   const hasActiveStudentFilter = studentFilterQuery.trim().length > 0;
   const hasRoster = rosterRows.length > 0;
   const hasFilterResults = filteredRosterRows.length > 0;
+  const classroomActivities = selectedClassroom ? activitiesByClassroomId[selectedClassroom.id] ?? [] : [];
 
   async function handleCreateSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -359,6 +444,67 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
     });
   }
 
+  async function handleActivitySubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedClassroom || !canSubmitActivity) {
+      return;
+    }
+
+    setIsSubmittingActivity(true);
+    setFeedback(null);
+    try {
+      const created = await createClassroomActivity(selectedClassroom.id, {
+        title: activityForm.title.trim(),
+        description: activityForm.description.trim()
+      });
+
+      setActivitiesByClassroomId((previous) => ({
+        ...previous,
+        [selectedClassroom.id]: [created, ...(previous[selectedClassroom.id] ?? [])]
+      }));
+      setActivityForm(EMPTY_ACTIVITY_FORM);
+      setFeedback({ tone: "success", message: "Actividad creada correctamente." });
+    } catch (error) {
+      setFeedback({
+        tone: "danger",
+        message: error instanceof Error ? error.message : "No se pudo crear la actividad."
+      });
+    } finally {
+      setIsSubmittingActivity(false);
+    }
+  }
+
+  async function handleGradeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!canSubmitGrade) {
+      return;
+    }
+
+    setIsSubmittingGrade(true);
+    setFeedback(null);
+
+    try {
+      const graded = await gradeActivitySubmission(gradeForm.submissionId.trim(), {
+        score: Number(gradeForm.score),
+        feedback: gradeForm.feedback.trim()
+      });
+
+      setSubmissionsByActivityId((previous) => ({
+        ...previous,
+        [graded.activityId]: graded
+      }));
+      setGradeForm(EMPTY_GRADE_FORM);
+      setFeedback({ tone: "success", message: "Entrega corregida y calificada." });
+    } catch (error) {
+      setFeedback({
+        tone: "danger",
+        message: error instanceof Error ? error.message : "No se pudo calificar la entrega."
+      });
+    } finally {
+      setIsSubmittingGrade(false);
+    }
+  }
+
   function handleClassroomSelection(classroomId: string) {
     setSelectedClassroomId(classroomId);
     setStudentFilterQuery("");
@@ -516,6 +662,134 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
             </form>
           ) : (
             <p>Seleccioná o creá un aula antes de registrar alumnos.</p>
+          )}
+        </article>
+
+        <article className="docente-aulas-card" aria-label="Formulario crear actividad">
+          <h2>Crear actividad</h2>
+          {selectedClassroom ? (
+            <form className="docente-aulas-form" onSubmit={handleActivitySubmit}>
+              <p className="docente-aulas-caption">
+                Aula activa: <strong>{selectedClassroom.name}</strong>
+              </p>
+              <label>
+                Título
+                <input
+                  name="activity-title"
+                  value={activityForm.title}
+                  onChange={(event) =>
+                    setActivityForm((previous) => ({
+                      ...previous,
+                      title: event.target.value
+                    }))
+                  }
+                  placeholder="Ej: Trabajo práctico 1"
+                />
+              </label>
+              <label>
+                Consigna
+                <textarea
+                  name="activity-description"
+                  rows={4}
+                  value={activityForm.description}
+                  onChange={(event) =>
+                    setActivityForm((previous) => ({
+                      ...previous,
+                      description: event.target.value
+                    }))
+                  }
+                  placeholder="Describe qué debe entregar el alumno"
+                />
+              </label>
+              <button type="submit" disabled={isSubmittingActivity || !canSubmitActivity}>
+                {isSubmittingActivity ? "Creando..." : "Crear actividad"}
+              </button>
+            </form>
+          ) : (
+            <p>Seleccioná o creá un aula para publicar actividades.</p>
+          )}
+        </article>
+
+        <article className="docente-aulas-card" aria-label="Formulario calificar entrega">
+          <h2>Calificar entrega</h2>
+          <form className="docente-aulas-form" onSubmit={handleGradeSubmit}>
+            <label>
+              Submission ID
+              <input
+                name="grade-submission-id"
+                value={gradeForm.submissionId}
+                onChange={(event) =>
+                  setGradeForm((previous) => ({
+                    ...previous,
+                    submissionId: event.target.value
+                  }))
+                }
+                placeholder="UUID de la entrega"
+              />
+            </label>
+            <label>
+              Nota (1 a 10)
+              <input
+                name="grade-score"
+                type="number"
+                min={1}
+                max={10}
+                value={gradeForm.score}
+                onChange={(event) =>
+                  setGradeForm((previous) => ({
+                    ...previous,
+                    score: event.target.value
+                  }))
+                }
+              />
+            </label>
+            <label>
+              Devolución
+              <textarea
+                name="grade-feedback"
+                rows={4}
+                value={gradeForm.feedback}
+                onChange={(event) =>
+                  setGradeForm((previous) => ({
+                    ...previous,
+                    feedback: event.target.value
+                  }))
+                }
+                placeholder="Feedback para el alumno"
+              />
+            </label>
+            <button type="submit" disabled={isSubmittingGrade || !canSubmitGrade}>
+              {isSubmittingGrade ? "Calificando..." : "Calificar entrega"}
+            </button>
+          </form>
+        </article>
+
+        <article className="docente-aulas-card" aria-label="Listado de actividades del aula seleccionada">
+          <h2>Actividades publicadas</h2>
+          {selectedClassroom ? (
+            <>
+              <p className="docente-aulas-caption">
+                Aula activa: <strong>{selectedClassroom.name}</strong>
+              </p>
+              {isLoadingActivities ? <p>Cargando actividades...</p> : null}
+              {!isLoadingActivities && classroomActivities.length === 0 ? (
+                <p>Todavía no hay actividades publicadas para esta aula.</p>
+              ) : null}
+              {classroomActivities.length > 0 ? (
+                <ul>
+                  {classroomActivities.map((activity) => {
+                    const submission = submissionsByActivityId[activity.id];
+                    return (
+                      <li key={activity.id}>
+                        <strong>{activity.title}</strong> - {resolveSubmissionLabel(submission)}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : null}
+            </>
+          ) : (
+            <p>Seleccioná o creá un aula para gestionar actividades.</p>
           )}
         </article>
 
@@ -691,4 +965,16 @@ function resolveStateDescription(uiState: DocenteAulasStatus) {
         description: "Aulas y formularios listos para gestión diaria."
       };
   }
+}
+
+function resolveSubmissionLabel(submission: ActivitySubmission | undefined) {
+  if (!submission) {
+    return "Sin entrega";
+  }
+
+  if (submission.status === "graded") {
+    return `Corregida (${submission.score ?? "-"}/10)`;
+  }
+
+  return "Entregada";
 }
