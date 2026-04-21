@@ -778,10 +778,26 @@ export function DocenteAulasWorkspace({ runInitialFetch = true, initialState }: 
               {classroomActivities.length > 0 ? (
                 <ul>
                   {classroomActivities.map((activity) => {
-                    const submission = submissionsByActivityId[activity.id];
+                    const submission = submissionsByActivityId[activity.id] ?? activity.submissions?.[0];
                     return (
                       <li key={activity.id}>
                         <strong>{activity.title}</strong> - {resolveSubmissionLabel(submission)}
+                        {submission ? (
+                          <>
+                            <span> · Submission ID: {submission.id}</span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setGradeForm((previous) => ({
+                                  ...previous,
+                                  submissionId: submission.id
+                                }))
+                              }
+                            >
+                              Usar entrega
+                            </button>
+                          </>
+                        ) : null}
                       </li>
                     );
                   })}

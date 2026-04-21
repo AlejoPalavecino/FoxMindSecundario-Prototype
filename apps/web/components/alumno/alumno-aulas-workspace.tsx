@@ -169,7 +169,9 @@ export function AlumnoAulasWorkspace({ runInitialFetch = true, initialState }: A
   const selectedClassroom = classrooms.find((classroom) => classroom.id === selectedClassroomId) ?? null;
   const classroomActivities = selectedClassroom ? activitiesByClassroomId[selectedClassroom.id] ?? [] : [];
   const selectedActivity = classroomActivities.find((activity) => activity.id === selectedActivityId) ?? null;
-  const selectedSubmission = selectedActivity ? submissionsByActivityId[selectedActivity.id] : undefined;
+  const selectedSubmission = selectedActivity
+    ? submissionsByActivityId[selectedActivity.id] ?? selectedActivity.studentSubmission
+    : undefined;
   const activityStatus = resolveStudentActivityStatus(selectedSubmission);
   const defaultActivityId = selectedActivityId ?? classroomActivities[0]?.id ?? "";
   const canSubmitActivity = submitForm.content.trim().length >= 10 && !!selectedActivity;

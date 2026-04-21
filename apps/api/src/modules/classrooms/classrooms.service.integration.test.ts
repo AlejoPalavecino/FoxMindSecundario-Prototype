@@ -492,6 +492,14 @@ describe("ClassroomsService integration", () => {
       },
       orderBy: {
         createdAt: "desc"
+      },
+      include: {
+        submissions: {
+          where: undefined,
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
       }
     });
   });
@@ -524,6 +532,16 @@ describe("ClassroomsService integration", () => {
       },
       orderBy: {
         createdAt: "desc"
+      },
+      include: {
+        submissions: {
+          where: {
+            studentId: ALUMNO_USER.sub
+          },
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
       }
     });
   });

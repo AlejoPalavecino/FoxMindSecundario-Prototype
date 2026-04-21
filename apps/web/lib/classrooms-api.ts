@@ -55,6 +55,8 @@ export interface ClassroomActivity {
   description: string;
   status: "published";
   createdAt: string;
+  submissions?: ActivitySubmission[];
+  studentSubmission?: ActivitySubmission;
 }
 
 export interface CreateClassroomActivityPayload {

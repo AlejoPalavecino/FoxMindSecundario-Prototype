@@ -57,6 +57,21 @@ type ClassroomActivity = {
   description: string;
   status: "published";
   createdAt: Date;
+  submissions?: SubmissionView[];
+  studentSubmission?: SubmissionView;
+};
+
+type SubmissionView = {
+  id: string;
+  activityId: string;
+  studentId: string;
+  content: string;
+  status: "submitted" | "graded";
+  createdAt: Date;
+  score?: number;
+  feedback?: string;
+  gradedAt?: Date;
+  gradedByUserId?: string;
 };
 
 const CSV_HEADER = "email,fullName";
@@ -372,6 +387,13 @@ export class ClassroomsService {
   async getClassroomActivities(classroomId: string, actor: JwtPayload): Promise<ClassroomActivity[]> {
     await this.ensureActivityVisibility(classroomId, actor);
 
+    const submissionWhere =
+      actor.role === "ALUMNO"
+        ? {
+            studentId: actor.sub
+          }
+        : undefined;
+
     const activities = await this.prisma.activity.findMany({
       where: {
         tenantId: actor.tenantId,
@@ -379,6 +401,14 @@ export class ClassroomsService {
       },
       orderBy: {
         createdAt: "desc"
+      },
+      include: {
+        submissions: {
+          where: submissionWhere,
+          orderBy: {
+            createdAt: "desc"
+          }
+        }
       }
     });
 
@@ -388,14 +418,68 @@ export class ClassroomsService {
       title: string;
       description: string;
       createdAt: Date;
-    }) => ({
-      id: activity.id,
-      classroomId: activity.classroomId,
-      title: activity.title,
-      description: activity.description,
-      status: "published",
-      createdAt: activity.createdAt
-    }));
+      submissions: Array<{
+        id: string;
+        activityId: string;
+        studentId: string;
+        content: string;
+        status: "SUBMITTED" | "GRADED";
+        createdAt: Date;
+        score: number | null;
+        feedback: string | null;
+        gradedAt: Date | null;
+        gradedByUserId: string | null;
+      }>;
+    }) => {
+      const mappedSubmissions = (activity.submissions ?? []).map((submission) =>
+        this.mapSubmissionView(submission)
+      );
+
+      const serialized: ClassroomActivity = {
+        id: activity.id,
+        classroomId: activity.classroomId,
+        title: activity.title,
+        description: activity.description,
+        status: "published",
+        createdAt: activity.createdAt
+      };
+
+      if (actor.role === "DOCENTE") {
+        serialized.submissions = mappedSubmissions;
+      }
+
+      if (actor.role === "ALUMNO") {
+        serialized.studentSubmission = mappedSubmissions[0];
+      }
+
+      return serialized;
+    });
+  }
+
+  private mapSubmissionView(submission: {
+    id: string;
+    activityId: string;
+    studentId: string;
+    content: string;
+    status: "SUBMITTED" | "GRADED";
+    createdAt: Date;
+    score: number | null;
+    feedback: string | null;
+    gradedAt: Date | null;
+    gradedByUserId: string | null;
+  }): SubmissionView {
+    return {
+      id: submission.id,
+      activityId: submission.activityId,
+      studentId: submission.studentId,
+      content: submission.content,
+      status: submission.status === "GRADED" ? "graded" : "submitted",
+      createdAt: submission.createdAt,
+      score: submission.score ?? undefined,
+      feedback: submission.feedback ?? undefined,
+      gradedAt: submission.gradedAt ?? undefined,
+      gradedByUserId: submission.gradedByUserId ?? undefined
+    };
   }
 
   async submitActivity(activityId: string, dto: CreateSubmissionDto, actor: JwtPayload) {
