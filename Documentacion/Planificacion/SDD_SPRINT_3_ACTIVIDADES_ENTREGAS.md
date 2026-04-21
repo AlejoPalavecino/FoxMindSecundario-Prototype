@@ -83,12 +83,12 @@ Escenarios:
 ### Must
 - [x] `TASK-001` Modelo y migraciones de actividades/entregas.
 - [x] `TASK-002` Endpoints de creacion/publicacion actividad.
-- [ ] `TASK-003` Endpoints de entrega y correccion.
+- [x] `TASK-003` Endpoints de entrega y correccion.
 - [ ] `TASK-004` UI Docente para crear actividad.
 - [ ] `TASK-005` UI Alumno para entregar actividad.
 - [ ] `TASK-006` UI Docente para calificar y dar feedback.
 - [ ] `TASK-007` UI Alumno para ver resultado.
-- [ ] `TASK-008` Tests integration de estados y permisos. (avance parcial Batch 1: permisos y visibilidad de actividades)
+- [ ] `TASK-008` Tests integration de estados y permisos. (avance parcial Batch 2: suma casos de entrega/correccion, ownership y validaciones; resta cerrar flujo E2E/UI en lotes siguientes)
 
 ### Should
 - [ ] `TASK-009` Reentrega controlada (si docente habilita).
@@ -103,7 +103,12 @@ Escenarios:
   - API Nest: implementados `POST /classrooms/:id/activities` y `GET /classrooms/:id/activities` con permisos por rol/membresia (`DOCENTE` aula propia, `ALUMNO` aula asignada).
   - Logging: agregado evento `activity.created`; rechazos de rol quedan cubiertos por `auth.guard.role.rejected` del guard global.
   - Tests integration (`TASK-008` parcial): caso positivo de creacion por docente, caso negativo alumno creando (`403`), listado visible por rol (docente aula propia, alumno solo asignado).
-- Batch 2: entrega + correccion API.
+- Batch 2 (completado):
+  - API Nest: implementados `POST /activities/:id/submissions` (ALUMNO) y `PATCH /submissions/:id/grade` (DOCENTE), con wiring en modulo y DTOs dedicados.
+  - Reglas de negocio: entrega solo para alumno enrolado en aula de la actividad; `content` obligatorio con minimo 10 chars y rechazo whitespace-only.
+  - Correccion: solo docente owner del aula de la entrega; `score` entero `1..10`; `feedback` obligatorio `5..1000`; set de `gradedAt` y `gradedByUserId`; transicion consistente `submitted -> graded` (sin doble correccion).
+  - Logging: agregados eventos `submission.created` y `submission.graded`; rechazos por rol siguen auditados por `auth.guard.role.rejected` en guard global.
+  - Tests integration (`TASK-008` parcial): positivos de entrega alumno y correccion docente; negativos de ownership/rol y validaciones de `content`, `score`, `feedback`.
 - Batch 3: UIs docente/alumno.
 - Batch 4: tests + ajustes.
 
