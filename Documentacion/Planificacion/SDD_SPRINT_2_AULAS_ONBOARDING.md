@@ -87,10 +87,10 @@ Escenarios:
 - [x] `TASK-007` Tests integration de enrollment y permisos.
 
 ### Should
-- [ ] `TASK-008` Busqueda/filtro en listado de alumnos de aula.
+- [x] `TASK-008` Busqueda/filtro en listado de alumnos de aula.
 
 ### Could
-- [ ] `TASK-009` Export rapido de listado de aula.
+- [x] `TASK-009` Export rapido de listado de aula.
 
 ## 6) Apply
 - Batch 0 (completado): acuerdos operativos cerrados (contrato CSV, matriz permisos, logging minimo y evidencia de verify).
@@ -112,6 +112,11 @@ Escenarios:
     - Logging mínimo aplicado para import masivo: `enrollment.csv.imported` (resumen de import) y `enrollment.csv.rejected` (errores por fila o rechazo de archivo) con metadata obligatoria y `line`/`code`.
     - `TASK-006` completada: endpoint `GET /student/classrooms` habilitado para `ALUMNO` y UI Alumno conectada a endpoint real para listar aulas asignadas con estados `loading/error/empty/success` consistentes.
     - `TASK-007` completada: tests de integración/API cubren CSV válido, CSV inválido, duplicados y permisos (`403` para ALUMNO en endpoints admin y `403` para DOCENTE en endpoint alumno); tests Web cubren render de aulas asignadas y feedback/reportes de import CSV.
+- Batch 4: filtro + export rápido de listado docente.
+  - Resultado Batch 4:
+    - `TASK-008` completada: UI Docente agrega `Listado de alumnos` para aula seleccionada con filtro por `studentId` (MVP disponible), botón de limpieza de filtro y feedback explícito cuando no hay coincidencias.
+    - `TASK-009` completada: acción `Exportar CSV` desde aula seleccionada con generación de archivo `studentId,email,fullName,status`; comportamiento elegido para aula sin alumnos: no descarga archivo y muestra mensaje preventivo.
+    - Cobertura de tests agregada para búsqueda/filtro (con resultados y sin resultados) y export (contrato de payload CSV + disparo de descarga + caso sin alumnos).
 
 ## 7) Verify
 - Evidencia requerida:
