@@ -135,4 +135,49 @@ describe("Classrooms permissions integration", () => {
       })
     );
   });
+
+  it("rejects ALUMNO with 403 when creating classroom activity", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: alumnoUser,
+      method: "POST",
+      url: "/api/classrooms/classroom-1/activities",
+      handler: ClassroomsController.prototype.createClassroomActivity,
+      controllerClass: ClassroomsController
+    });
+
+    let thrownError: unknown;
+    try {
+      guard.canActivate(context);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(ForbiddenException);
+    expect((thrownError as ForbiddenException).getStatus()).toBe(403);
+    expect(authLogger.warn).toHaveBeenCalledWith(
+      "auth.guard.role.rejected",
+      expect.objectContaining({
+        tenantId: alumnoUser.tenantId,
+        actorUserId: alumnoUser.sub,
+        role: alumnoUser.role,
+        resourceId: "/api/classrooms/classroom-1/activities"
+      })
+    );
+  });
+
+  it("allows ALUMNO to list classroom activities", () => {
+    const guard = new RolesGuard(new Reflector(), authLogger as never);
+    const context = createExecutionContext({
+      user: alumnoUser,
+      method: "GET",
+      url: "/api/classrooms/classroom-1/activities",
+      handler: ClassroomsController.prototype.getClassroomActivities,
+      controllerClass: ClassroomsController
+    });
+
+    const allowed = guard.canActivate(context);
+
+    expect(allowed).toBe(true);
+  });
 });

@@ -13,6 +13,15 @@ enum Role {
   ALUMNO
 }
 
+enum ActivityStatus {
+  PUBLISHED @map("published")
+}
+
+enum SubmissionStatus {
+  SUBMITTED @map("submitted")
+  GRADED    @map("graded")
+}
+
 model Tenant {
   id         String      @id @default(uuid()) @db.Uuid
   name       String
@@ -21,6 +30,8 @@ model Tenant {
   users      User[]
   classrooms Classroom[]
   enrollments Enrollment[]
+  activities Activity[]
+  submissions Submission[]
 }
 
 model User {
@@ -36,6 +47,9 @@ model User {
   tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   classrooms  Classroom[]  @relation("ClassroomTeacher")
   enrollments Enrollment[]
+  createdActivities Activity[]   @relation("ActivityCreator")
+  submissions       Submission[] @relation("SubmissionStudent")
+  gradedSubmissions Submission[] @relation("SubmissionGrader")
 
   @@index([tenantId])
   @@index([role])
@@ -52,6 +66,7 @@ model Classroom {
   tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   teacher     User         @relation("ClassroomTeacher", fields: [teacherId], references: [id], onDelete: Restrict)
   enrollments Enrollment[]
+  activities  Activity[]
 
   @@index([tenantId])
   @@index([teacherId])
@@ -70,4 +85,52 @@ model Enrollment {
   @@unique([classroomId, studentId])
   @@index([tenantId])
   @@index([studentId])
+}
+
+model Activity {
+  id            String         @id @default(uuid()) @db.Uuid
+  tenantId      String         @db.Uuid
+  classroomId   String         @db.Uuid
+  creatorUserId String         @db.Uuid
+  title         String
+  description   String
+  status        ActivityStatus @default(PUBLISHED)
+  publishedAt   DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  classroom     Classroom      @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  creator       User           @relation("ActivityCreator", fields: [creatorUserId], references: [id], onDelete: Restrict)
+  submissions   Submission[]
+
+  @@index([tenantId])
+  @@index([classroomId])
+  @@index([creatorUserId])
+  @@index([status])
+}
+
+model Submission {
+  id              String           @id @default(uuid()) @db.Uuid
+  tenantId        String           @db.Uuid
+  activityId      String           @db.Uuid
+  studentId       String           @db.Uuid
+  content         String
+  status          SubmissionStatus @default(SUBMITTED)
+  score           Int?
+  feedback        String?
+  gradedAt        DateTime?
+  gradedByUserId  String?          @db.Uuid
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  activity        Activity         @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  student         User             @relation("SubmissionStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  gradedBy        User?            @relation("SubmissionGrader", fields: [gradedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([activityId, studentId])
+  @@index([tenantId])
+  @@index([activityId])
+  @@index([studentId])
+  @@index([gradedByUserId])
+  @@index([status])
 }

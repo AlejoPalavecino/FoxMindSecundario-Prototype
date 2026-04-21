@@ -7,6 +7,7 @@ import { CreateClassroomDto } from "./dto/create-classroom.dto";
 import { UpdateClassroomDto } from "./dto/update-classroom.dto";
 import { CreateEnrollmentDto } from "./dto/create-enrollment.dto";
 import { ImportEnrollmentsCsvDto } from "./dto/import-enrollments-csv.dto";
+import { CreateClassroomActivityDto } from "./dto/create-classroom-activity.dto";
 
 type EnrollmentResult = {
   created: boolean;
@@ -45,6 +46,15 @@ type TeacherClassroom = {
   name: string;
   subject: string;
   students: TeacherClassroomStudent[];
+};
+
+type ClassroomActivity = {
+  id: string;
+  classroomId: string;
+  title: string;
+  description: string;
+  status: "published";
+  createdAt: Date;
 };
 
 const CSV_HEADER = "email,fullName";
@@ -330,6 +340,59 @@ export class ClassroomsService {
     }));
   }
 
+  async createClassroomActivity(classroomId: string, dto: CreateClassroomActivityDto, actor: JwtPayload) {
+    await this.ensureTeacherOwnsClassroom(classroomId, actor);
+
+    const activity = await this.prisma.activity.create({
+      data: {
+        tenantId: actor.tenantId,
+        classroomId,
+        creatorUserId: actor.sub,
+        title: dto.title,
+        description: dto.description,
+        status: "PUBLISHED"
+      }
+    });
+
+    this.classroomsLogger.info("activity.created", this.buildLogMetadata(actor, activity.id));
+
+    return {
+      id: activity.id,
+      title: activity.title,
+      description: activity.description,
+      status: "published"
+    };
+  }
+
+  async getClassroomActivities(classroomId: string, actor: JwtPayload): Promise<ClassroomActivity[]> {
+    await this.ensureActivityVisibility(classroomId, actor);
+
+    const activities = await this.prisma.activity.findMany({
+      where: {
+        tenantId: actor.tenantId,
+        classroomId
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    return activities.map((activity: {
+      id: string;
+      classroomId: string;
+      title: string;
+      description: string;
+      createdAt: Date;
+    }) => ({
+      id: activity.id,
+      classroomId: activity.classroomId,
+      title: activity.title,
+      description: activity.description,
+      status: "published",
+      createdAt: activity.createdAt
+    }));
+  }
+
   private async ensureClassroomBelongsToTenant(classroomId: string, tenantId: string) {
     const classroom = await this.prisma.classroom.findFirst({
       where: {
@@ -357,6 +420,47 @@ export class ClassroomsService {
     if (!student) {
       throw new ConflictException("Alumno inválido para esta aula");
     }
+  }
+
+  private async ensureTeacherOwnsClassroom(classroomId: string, actor: JwtPayload) {
+    const classroom = await this.prisma.classroom.findFirst({
+      where: {
+        id: classroomId,
+        tenantId: actor.tenantId,
+        teacherId: actor.sub
+      },
+      select: { id: true }
+    });
+
+    if (!classroom) {
+      throw new NotFoundException("Aula no encontrada");
+    }
+  }
+
+  private async ensureActivityVisibility(classroomId: string, actor: JwtPayload) {
+    if (actor.role === "DOCENTE") {
+      await this.ensureTeacherOwnsClassroom(classroomId, actor);
+      return;
+    }
+
+    if (actor.role === "ALUMNO") {
+      const enrollment = await this.prisma.enrollment.findFirst({
+        where: {
+          classroomId,
+          tenantId: actor.tenantId,
+          studentId: actor.sub
+        },
+        select: { id: true }
+      });
+
+      if (!enrollment) {
+        throw new NotFoundException("Aula no encontrada");
+      }
+
+      return;
+    }
+
+    throw new NotFoundException("Aula no encontrada");
   }
 
   private buildLogMetadata(actor: JwtPayload, resourceId: string) {
