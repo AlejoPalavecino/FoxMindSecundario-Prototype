@@ -253,7 +253,10 @@ export class ClassroomsService {
       }
     });
 
-    return enrollments.map((enrollment) => ({
+    return enrollments.map((enrollment: {
+      id: string;
+      classroom: { id: string; name: string; subject: string };
+    }) => ({
       id: enrollment.classroom.id,
       name: enrollment.classroom.name,
       subject: enrollment.classroom.subject,
